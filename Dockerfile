@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-alpine
 MAINTAINER zlatanov.xyz
-COPY target/subsbuddy.jar subsbuddy.jar
+COPY target/subs-buddy.jar subs-buddy.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/subsbuddy.jar"]
+ENTRYPOINT ["java","-jar","/subs-buddy.jar"]
