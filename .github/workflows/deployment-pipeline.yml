@@ -36,7 +36,15 @@ jobs:
 
       - name: Deploy On Test Environment
         run: >
-          echo "Deploying on test environment..."
+          sshpass -p "${{secrets.VPS_PASS}}" ssh -o "StrictHostKeyChecking no" root@${{secrets.VPS_IP}} "
+          docker stop subs-buddy || true; 
+          docker rm subs-buddy || true; 
+          docker rmi ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
+          docker pull ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
+          docker run -d -p 8080:8080 --name subs-buddy --add-host host.docker.internal:host-gateway 
+            -e DB_URL=mongodb://host.docker.internal:27017/subs-buddy  
+          ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
+          "
 
       - name: Acceptance Stage Tests
         run: >
