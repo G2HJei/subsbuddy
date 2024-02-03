@@ -30,5 +30,6 @@ jobs:
         cache: 'npm'
         cache-dependency-path: '**/package-lock.json' # THIS PATTERN did the trick for me.
     - run: npm ci
+      working-directory: ./src/test/nightwatch
     - run: npm run build --if-present
     - run: npm test
