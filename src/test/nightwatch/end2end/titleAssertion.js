@@ -19,7 +19,7 @@ describe('Title Assertion', function() {
      * Eg: browser.navigateTo('https://www.github.com/');
      */
 
-    browser.navigateTo(browser.launch_url);
+    browser.navigateTo(process.env.SUBS_BUDDY_URL);
   });
 
 
