@@ -16,26 +16,26 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [20.11.0]
+        node-version: [ 20.11.0 ]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      env:
-        SUBS_BUDDY_URL: ${{secrets.SUBS_BUDDY_URL}}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-        cache-dependency-path: '**/package-lock.json'
-    - run: npm ci
-      working-directory: ./src/test/nightwatch
-    - run: mkdir -p screens logs
-    - run: sudo apt-get install xvfb
-    - name: Run Nightwatch tests
-      run: xvfb-run --auto-servernum npm test -- --env chrome
-      working-directory: ./src/test/nightwatch
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+      - run: npm ci
+        working-directory: ./src/test/nightwatch
+      - run: mkdir -p screens logs
+      - run: sudo apt-get install xvfb
+      - name: Run Nightwatch tests
+        env:
+          SUBS_BUDDY_URL: ${{secrets.SUBS_BUDDY_URL}}
+        run: xvfb-run --auto-servernum npm test -- --env chrome
+        working-directory: ./src/test/nightwatch
 #    - run: npm run build --if-present
 #      working-directory: ./src/test/nightwatch
 #    - run: npm test './src/test/nightwatch/end2end'
