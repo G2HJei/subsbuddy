@@ -31,7 +31,11 @@ jobs:
         cache-dependency-path: '**/package-lock.json'
     - run: npm ci
       working-directory: ./src/test/nightwatch
-    - run: npm run build --if-present
-      working-directory: ./src/test/nightwatch
-    - run: npm test './src/test/nightwatch/end2end'
-      working-directory: ./src/test/nightwatch
+    - run: mkdir -p screens logs
+    - run: sudo apt-get install xvfb
+    - name: Run Nightwatch tests
+      run: xvfb-run --auto-servernum npm test -- --env chrome
+#    - run: npm run build --if-present
+#      working-directory: ./src/test/nightwatch
+#    - run: npm test './src/test/nightwatch/end2end'
+#      working-directory: ./src/test/nightwatch
