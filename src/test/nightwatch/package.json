@@ -4,7 +4,7 @@
   "description": "To launch tests locally, install Nightwatch:",
   "main": "test/titleAssertion.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nightwatch"
   },
   "keywords": [],
   "author": "",
