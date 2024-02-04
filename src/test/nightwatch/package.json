@@ -4,7 +4,7 @@
   "description": "To launch tests locally, install Nightwatch:",
   "main": "test/titleAssertion.js",
   "scripts": {
-    "test": "nightwatch"
+    "test": "nightwatch '/end2end'"
   },
   "keywords": [],
   "author": "",
