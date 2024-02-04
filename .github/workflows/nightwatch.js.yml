@@ -33,5 +33,4 @@ jobs:
       working-directory: ./src/test/nightwatch
     - run: npm run build --if-present
       working-directory: ./src/test/nightwatch
-    - run: npm test
-      working-directory: ./src/test/nightwatch/end2end
+    - run: npm test './src/test/nightwatch/end2end'
