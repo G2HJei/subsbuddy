@@ -47,7 +47,7 @@ jobs:
           docker rm subs-buddy || true; 
           docker rmi ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
           docker pull ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
-          docker run -d -p 8080:8080 --name subs-buddy -e DB_URL=host.docker.internal:27017/subs-buddy ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
+          docker run -d -p 8080:8080 --name subs-buddy -e DB_URL=localhost:27017/subs-buddy ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
           "
 
       - name: Setup Node.js
