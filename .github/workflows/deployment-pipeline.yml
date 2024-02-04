@@ -13,8 +13,8 @@ jobs:
         node-version: [ 20.11.0 ] # Acceptance Stage
 
     steps:
-# SETUP
-#######
+      # SETUP
+      #######
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -25,13 +25,13 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-# COMMIT STAGE
-##############
+      # COMMIT STAGE
+      ##############
       - name: Commit Stage Tests + Package
         run: mvn -B package
 
-# ACCEPTANCE STAGE
-##################
+      # ACCEPTANCE STAGE
+      ##################
       - name: DockerHub > login
         uses: docker/login-action@v2
         with:
@@ -57,29 +57,23 @@ jobs:
           ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
           "
 
-      - name: Acceptance Stage Tests
-        run: >
-          echo "Running acceptance tests againts test environment..."
-
       - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
-      - name: Install Nightwatch.js
-        run: npm ci
-        working-directory: ./src/test/nightwatch
-      - name: install xvfb
-        run: sudo apt-get install xvfb
       - name: Nightwatch.js tests
         env:
           SUBS_BUDDY_URL: ${{secrets.SUBS_BUDDY_URL}}
-        run: xvfb-run --auto-servernum npm test -- --env chrome
         working-directory: ./src/test/nightwatch
+        run: |
+          npm ci
+          sudo apt-get install xvfb
+          xvfb-run --auto-servernum npm test -- --env chrome
 
-# DEPLOY STAGE
-##############
+      # DEPLOY STAGE
+      ##############
       - name: Deploy @ PROD
         run: >
           echo "Deploying to PROD environment..."
