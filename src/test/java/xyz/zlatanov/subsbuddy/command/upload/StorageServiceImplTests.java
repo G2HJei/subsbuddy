@@ -4,11 +4,11 @@ import org.junit.jupiter.api.Test;
 
 public class StorageServiceImplTests {
 
-	StorageService service = new StorageServiceImpl();
+	UploadFileHandler handler = new UploadFileHandlerImpl();
 
 	@Test
 	void uploadService_validFile_returns() {
 		// todo
-		service.uploadFile(new FileUploadCommand());
+		handler.uploadFile(new FileUploadCommand());
 	}
 }
