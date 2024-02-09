@@ -4,6 +4,6 @@ public class UploadFileHandlerImpl implements UploadFileHandler {
 
 	@Override
 	public void uploadFile(FileUploadCommand file) {
-		// todo
+
 	}
 }
