@@ -5,6 +5,7 @@ describe('Subs Buddy Test Suite', function () {
 
 	const dirPath = path.join(__dirname, '../generatedFiles');
 	const over1MbFile = path.join(__dirname, '../generatedFiles', 'generated_file.srt');
+	const nonSrtFile = path.join(__dirname, '../generatedFiles', 'generated_file.txt');
 
 	before(function (browser) {
 		// Generate a file with size just over 1 MB
@@ -27,6 +28,9 @@ describe('Subs Buddy Test Suite', function () {
 		browser.expect.element('p.alert.alert-danger').text.to.equal('File too big. (max 1MB)');
 	});
 
+	it('Reject non-srt files', function(browser){
+
+	})
 
 	after(function (browser) {
 		browser.end(() => {
