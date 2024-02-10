@@ -11,6 +11,7 @@ import lombok.experimental.Accessors;
 @Getter(onMethod = @__(@JsonProperty)) // allow (de)serialization of fluent accessors
 public class FileUploadCommand {
 
-	private String		filename;
-	private String content;
+	private String	filename;
+	private String	content;
+	private String	owner;
 }
