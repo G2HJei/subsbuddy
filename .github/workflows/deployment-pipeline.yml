@@ -63,6 +63,7 @@ jobs:
         run: |
           npm ci
           sudo apt-get install xvfb
+          sleep 10
           xvfb-run --auto-servernum npm test -- --env chrome
 
       # DEPLOY STAGE
