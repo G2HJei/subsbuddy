@@ -12,7 +12,7 @@ describe('Subs Buddy Test Suite', function () {
 		if (!fs.existsSync(dirPath)) {
 			fs.mkdirSync(dirPath, {recursive: true});
 		}
-		fs.writeFileSync(over1MbFile, Buffer.alloc(1048577)); // 1 MB + 1 byte
+		fs.writeFileSync(over1MbFile, Buffer.alloc(1024 * 100 + 1)); // 100KB + 1 byte
 		fs.writeFileSync(nonSrtFile, Buffer.alloc(1));
 
 		browser.navigateTo(process.env.SUBS_BUDDY_URL);
@@ -22,17 +22,17 @@ describe('Subs Buddy Test Suite', function () {
 		browser.assert.titleEquals('Subs Buddy');
 	});
 
-	it('Reject files over 100KB', function (browser) {
-		browser.setValue('input#srtSelect[type="file"]', over1MbFile);
-		browser.click('button#btnUpload');
-		browser.expect.element('p.alert.alert-danger').text.to.equal('File too big. (max 100KB)');
-	});
-
 	it('Reject non-srt files', function (browser) {
 		browser.setValue('input#srtSelect[type="file"]', nonSrtFile);
 		browser.click('button#btnUpload');
 		browser.expect.element('p.alert.alert-danger').text.to.equal('Please select .srt file.');
 	})
+
+	it('Reject files over 100KB', function (browser) {
+		browser.setValue('input#srtSelect[type="file"]', over1MbFile);
+		browser.click('button#btnUpload');
+		browser.expect.element('p.alert.alert-danger').text.to.equal('File too big. (max 100KB)');
+	});
 
 	after(function (browser) {
 		browser.end(() => {
