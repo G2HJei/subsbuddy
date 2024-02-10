@@ -3,16 +3,12 @@ const path = require('path');
 
 describe('Subs Buddy Test Suite', function () {
 
-	const dirPath = path.join(__dirname, 'generatedFiles');
-	const over1MbFile = path.join(__dirname, 'generatedFiles', 'generated_file.srt');
-	const nonSrtFile = path.join(__dirname, 'generatedFiles', 'generated_file.txt');
-	const nonEnglishFile = path.join(__dirname, 'generatedFiles', 'non_english.srt');
+	const over1MbFile = path.join(__dirname, 'generated_file.srt');
+	const nonSrtFile = path.join(__dirname, 'generated_file.txt');
+	const nonEnglishFile = path.join(__dirname, 'non_english.srt');
 
 	before(function (browser) {
 		// Generate a file with size just over 1 MB
-		if (!fs.existsSync(dirPath)) {
-			fs.mkdirSync(dirPath, {recursive: true});
-		}
 		fs.writeFileSync(over1MbFile, Buffer.alloc(1024 * 100 + 1)); // 100KB + 1 byte
 		fs.writeFileSync(nonSrtFile, Buffer.alloc(1));
 		fs.writeFileSync(nonEnglishFile, 'Неанглийски файл.');
@@ -53,7 +49,6 @@ describe('Subs Buddy Test Suite', function () {
 			if (fs.existsSync(nonEnglishFile)) {
 				fs.unlinkSync(nonEnglishFile);
 			}
-			fs.rmdirSync(dirPath);
 		});
 	});
 });
