@@ -40,7 +40,7 @@ describe('Subs Buddy Test Suite', function () {
 		browser.setValue('input#srtSelect[type="file"]', nonEnglishFile);
 		browser.click('button#btnUpload');
 		browser.expect.element('p.alert.alert-danger').text.to.equal('Unsupported language detected. Supported languages: English.');
-	})
+	});
 
 	after(function (browser) {
 		browser.end(() => {
@@ -49,6 +49,9 @@ describe('Subs Buddy Test Suite', function () {
 			}
 			if (fs.existsSync(nonSrtFile)) {
 				fs.unlinkSync(nonSrtFile);
+			}
+			if (fs.existsSync(nonEnglishFile)) {
+				fs.unlinkSync(nonEnglishFile);
 			}
 			fs.rmdirSync(dirPath);
 		});
