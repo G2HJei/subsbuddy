@@ -1,7 +1,6 @@
 package xyz.zlatanov.subsbuddy.controller;
 
-import static xyz.zlatanov.subsbuddy.domain.FileType.SRT;
-
+import lombok.SneakyThrows;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,15 +10,14 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import lombok.AllArgsConstructor;
-import xyz.zlatanov.subsbuddy.command.upload.FileUploadCommand;
-import xyz.zlatanov.subsbuddy.command.upload.UploadFileHandler;
+import xyz.zlatanov.subsbuddy.service.HomeService;
 
 @Controller
 @RequestMapping("/")
 @AllArgsConstructor
-public class MainController {
+public class HomeController {
 
-	private UploadFileHandler uploadFileHandler;
+	private HomeService service;
 
 	@GetMapping
 	public String upload(Model model) {
@@ -27,11 +25,10 @@ public class MainController {
 		return "upload";
 	}
 
+	@SneakyThrows
 	@PostMapping
 	public String processUpload(Model model, @RequestParam("srt") MultipartFile file) {
-		uploadFileHandler.uploadFile(new FileUploadCommand()
-				.type(SRT)
-				.filename(file.getOriginalFilename()));
+		service.upload(file.getOriginalFilename(), file.getBytes());
 		model.addAttribute("message", "Uploaded: " + file.getOriginalFilename());
 		return "upload";
 	}

@@ -5,8 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.Getter;
 import lombok.experimental.Accessors;
-import xyz.zlatanov.subsbuddy.domain.FileType;
-import xyz.zlatanov.subsbuddy.domain.Language;
 
 @Data
 @Accessors(fluent = true)
@@ -14,7 +12,5 @@ import xyz.zlatanov.subsbuddy.domain.Language;
 public class FileUploadCommand {
 
 	private String		filename;
-	private FileType	type;
-	private Language	language;
-	private String		subtitleData;
+	private String content;
 }

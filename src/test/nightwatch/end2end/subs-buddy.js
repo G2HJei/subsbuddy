@@ -18,7 +18,7 @@ describe('Subs Buddy Test Suite', function () {
 		browser.navigateTo(process.env.SUBS_BUDDY_URL);
 	});
 
-	it('tests title of the page', function (browser) {
+	it('Test title of the page', function (browser) {
 		browser.assert.titleEquals('Subs Buddy');
 	});
 
