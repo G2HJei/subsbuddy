@@ -24,8 +24,8 @@ public class HomeController {
 	private HomeService service;
 
 	@GetMapping
-	public String upload(Model model) {
-		// todo list existing and allow download
+	public String upload(Model model, HttpServletRequest request) {
+		model.addAttribute("model", service.getModel(WebUtils.getOwner(request)));
 		return "upload";
 	}
 
