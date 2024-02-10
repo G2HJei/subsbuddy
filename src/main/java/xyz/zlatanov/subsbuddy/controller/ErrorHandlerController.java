@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
+import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploaded;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
 
 @ControllerAdvice
@@ -18,6 +19,12 @@ public class ErrorHandlerController {
 
 	@ExceptionHandler(NotSupportedFileType.class)
 	public String nonSrtFile(NotSupportedFileType e, Model model) {
+		model.addAttribute("error", e.getMessage());
+		return "upload";
+	}
+
+	@ExceptionHandler(NonEnglishSubtitleUploaded.class)
+	public String nonSrtFile(NonEnglishSubtitleUploaded e, Model model) {
 		model.addAttribute("error", e.getMessage());
 		return "upload";
 	}
