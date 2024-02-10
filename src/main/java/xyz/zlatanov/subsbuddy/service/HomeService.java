@@ -16,7 +16,7 @@ public class HomeService {
 
 	private UploadFileHandler uploadFileHandler;
 
-	public void upload(String fileName, byte[] bytes) {
+	public void upload(String fileName, byte[] bytes, String owner) {
 		if (!fileName.endsWith(".srt")) {
 			throw new NotSupportedFileType();
 		}
@@ -26,6 +26,7 @@ public class HomeService {
 		}
 		uploadFileHandler.uploadFile(new FileUploadCommand()
 				.filename(fileName)
-				.content(content));
+				.content(content)
+				.owner(owner));
 	}
 }

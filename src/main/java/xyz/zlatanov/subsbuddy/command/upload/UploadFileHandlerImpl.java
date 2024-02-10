@@ -22,6 +22,10 @@ public class UploadFileHandlerImpl implements UploadFileHandler {
 		if (!file.filename().endsWith(".srt")) {
 			throw new NotSupportedFileType();
 		}
-		movieSubtitleRepository.insert(new MovieSubtitle(file.filename(), ENGLISH, file.content()));
+		movieSubtitleRepository.insert(new MovieSubtitle()
+				.filename(file.filename())
+				.language(ENGLISH)
+				.subtitleData(file.content())
+				.owner(file.owner()));
 	}
 }
