@@ -24,14 +24,15 @@ public class HomeController {
 	private HomeService service;
 
 	@GetMapping
-	public String upload(Model model, HttpServletRequest request) {
+	public String home(HttpServletRequest request, Model model, @RequestParam(value = "error", defaultValue = "#{null}") String error) {
 		model.addAttribute("model", service.getModel(WebUtils.getOwner(request)));
+		model.addAttribute("error", error);
 		return "upload";
 	}
 
 	@SneakyThrows
 	@PostMapping
-	public String processUpload(Model model, @RequestParam("srt") MultipartFile file, HttpServletRequest request) {
+	public String upload(Model model, @RequestParam("srt") MultipartFile file, HttpServletRequest request) {
 		service.upload(Objects.requireNonNull(file.getOriginalFilename()), file.getBytes(), WebUtils.getOwner(request));
 		model.addAttribute("message", "Uploaded: " + file.getOriginalFilename());
 		return "upload";
