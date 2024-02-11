@@ -21,17 +21,17 @@ public class FileUploadHandlerImplTest {
 	@Test
 	void uploadFile_validFile_returns() {
 		when(movieSubtitleRepository.insert((MovieSubtitle) any())).thenReturn(new MovieSubtitle());
-		assertDoesNotThrow(() -> handler.uploadFile(new FileUploadCommand().filename("test.srt").content("test")));
+		assertDoesNotThrow(() -> handler.uploadFile(new UploadFileCommand().filename("test.srt").content("test")));
 	}
 
 	@Test
 	void uploadFile_nonSrtFile_throws() {
-		assertThrows(NotSupportedFileType.class, () -> handler.uploadFile(new FileUploadCommand().filename("test.zip")));
+		assertThrows(NotSupportedFileType.class, () -> handler.uploadFile(new UploadFileCommand().filename("test.zip")));
 	}
 
 	@Test
 	void uploadFile_alreadyUploaded_throws(){
 		when(movieSubtitleRepository.findOneByOwnerAndFilename("me", "alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
-		assertThrows(AlreadyUploaded.class, () -> handler.uploadFile(new FileUploadCommand().filename("alreadyUploaded.srt").owner("me")));
+		assertThrows(AlreadyUploaded.class, () -> handler.uploadFile(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
 	}
 }

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static xyz.zlatanov.subsbuddy.domain.Language.ENGLISH;
+import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 
 import java.util.List;
 
@@ -21,7 +21,7 @@ class AvailableSubsQueryHandlerImplTest {
 
 	@BeforeEach
 	void setup(){
-		when(repository.findByOwner("owner1")).thenReturn(List.of(new MovieSubtitle().id("id").language(ENGLISH).filename("name")));
+		when(repository.findByOwner("owner1")).thenReturn(List.of(new MovieSubtitle().id("id").language(EN).filename("name")));
 		when(repository.findByOwner("owner2")).thenReturn(List.of());
 		when(repository.findByOwner(null)).thenReturn(List.of());
 	}

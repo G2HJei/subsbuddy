@@ -17,10 +17,10 @@ public class WebUtils {
 				.orElseGet(request::getRemoteAddr);
 	}
 
-	public static String getErrorQueryParamRedirect(HttpServletRequest request, String msg) {
+	public static String getErrorQueryParamRedirect(HttpServletRequest request, String key, String msg) {
 		val msgEncoded = UriUtils.encodeQueryParam(msg, UTF_8);
 		val uri = ServletUriComponentsBuilder.fromContextPath(request)
-				.queryParam("error", msgEncoded)
+				.queryParam(key, msgEncoded)
 				.build();
 		return "redirect:" + uri.getPath() + "?" + uri.getQuery();
 	}
