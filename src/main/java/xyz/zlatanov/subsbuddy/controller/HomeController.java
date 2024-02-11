@@ -27,7 +27,7 @@ public class HomeController {
 	public String home(HttpServletRequest request, Model model, @RequestParam(value = "error", defaultValue = "#{null}") String error) {
 		model.addAttribute("model", service.getModel(WebUtils.getOwner(request)));
 		model.addAttribute("error", error);
-		return "upload";
+		return "home";
 	}
 
 	@SneakyThrows
@@ -35,6 +35,6 @@ public class HomeController {
 	public String upload(Model model, @RequestParam("srt") MultipartFile file, HttpServletRequest request) {
 		service.upload(Objects.requireNonNull(file.getOriginalFilename()), file.getBytes(), WebUtils.getOwner(request));
 		model.addAttribute("message", "Uploaded: " + file.getOriginalFilename());
-		return "upload";
+		return "home";
 	}
 }
