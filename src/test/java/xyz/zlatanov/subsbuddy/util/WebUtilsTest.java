@@ -20,4 +20,11 @@ class WebUtilsTest {
 		request.setRemoteAddr("addr");
 		assertEquals("addr", WebUtils.getOwner(request));
 	}
+
+	@Test
+	void getErrorQueryParamRedirect_message_encodes() {
+		MockHttpServletRequest request = new MockHttpServletRequest();
+		request.setContextPath("/");
+		assertEquals("redirect:/?error=Test%20message%22", WebUtils.getErrorQueryParamRedirect(request, "Test message\""));
+	}
 }
