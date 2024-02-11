@@ -24,17 +24,25 @@ public class HomeController {
 	private HomeService service;
 
 	@GetMapping
-	public String home(HttpServletRequest request, Model model, @RequestParam(value = "error", defaultValue = "#{null}") String error) {
+	public String home(HttpServletRequest request, Model model,
+			@RequestParam(value = "error", defaultValue = "#{null}") String error,
+			@RequestParam(value = "message", defaultValue = "#{null}") String message) {
 		model.addAttribute("model", service.getModel(WebUtils.getOwner(request)));
 		model.addAttribute("error", error);
+		model.addAttribute("message", message);
 		return "home";
 	}
 
 	@SneakyThrows
 	@PostMapping
-	public String upload(Model model, @RequestParam("srt") MultipartFile file, HttpServletRequest request) {
+	public String upload(HttpServletRequest request, @RequestParam("srt") MultipartFile file) {
 		service.upload(Objects.requireNonNull(file.getOriginalFilename()), file.getBytes(), WebUtils.getOwner(request));
-		model.addAttribute("message", "Uploaded: " + file.getOriginalFilename());
-		return "home";
+		return WebUtils.getErrorQueryParamRedirect(request, "message", "Uploaded: " + file.getOriginalFilename());
+	}
+
+	@GetMapping("delete")
+	public String delete(HttpServletRequest request, @RequestParam("id") String id) {
+		service.delete(id);
+		return WebUtils.getErrorQueryParamRedirect(request, "message", "Successfully deleted.");
 	}
 }

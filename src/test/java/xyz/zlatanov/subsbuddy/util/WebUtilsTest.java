@@ -25,6 +25,6 @@ class WebUtilsTest {
 	void getErrorQueryParamRedirect_message_encodes() {
 		MockHttpServletRequest request = new MockHttpServletRequest();
 		request.setContextPath("/");
-		assertEquals("redirect:/?error=Test%20message%22", WebUtils.getErrorQueryParamRedirect(request, "Test message\""));
+		assertEquals("redirect:/?message=Test%20message%22", WebUtils.getErrorQueryParamRedirect(request, "message", "Test message\""));
 	}
 }

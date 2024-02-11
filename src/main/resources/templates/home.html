@@ -5,29 +5,60 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 </head>
 <body>
 <section class="mt-3">
     <div class="container">
         <div class="row">
             <div class="col-12 col-md-6 mx-auto">
-                <h2 class="d-flex justify-content-start gap-1 align-items-center">
+                <h2 class="d-flex justify-content-center gap-1 align-items-center">
                     <img src="" th:src="@{'/buddy.png'}" th:alt="buddy"/>
                     <span>Subs Buddy</span>
                 </h2>
                 <p th:text="${message}" th:if="${message ne null}" class="alert alert-success"></p>
                 <p th:text="${error}" th:if="${error ne null}" class="alert alert-danger"></p>
-                <form method="post" enctype="multipart/form-data">
+            </div>
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            <div class="row">
+                <div class="col-12 col-md-4 d-flex justify-content-start align-items-center ms-auto">
                     <div class="form-group">
                         <input id="srtSelect" type="file" name="srt" accept=".srt" class="form-control-file">
                     </div>
+                </div>
+                <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-end align-items-center me-auto">
                     <button id="btnUpload" type="submit" class="btn btn-primary mt-2">Upload</button>
-                </form>
+                </div>
             </div>
-        </div>
-        <div class="row">
+        </form>
+        <div class="row mt-2" th:if="${model.isEmpty()}">
             <div class="col-12 col-md-6 mx-auto">
                 Translated subs will appear here...
+            </div>
+        </div>
+        <div class="row mt-2" th:if="${not model.isEmpty()}">
+            <div class="col-12 col-md-6 mx-auto">
+                <table class="table table-hover table-borderless align-middle mt-2 w-100">
+                    <tbody>
+                    <tr th:each="sub : ${model}">
+                        <td>
+                            <img height="32px" src="" th:src="@{'/'+${sub.language}+'.png'}" th:alt="${sub.language}"/>
+                        </td>
+                        <td>
+                            <div class="row mx-0" th:text="${sub.filename}">
+                                Filename
+                            </div>
+                        </td>
+                        <td>
+                            <div class="d-flex justify-content-end gap-1">
+                                <i class="bi bi-cloud-arrow-down-fill text-success fs-3"></i>
+                                <a class="bi bi-x-circle-fill text-danger fs-4 visually-hidden" th:href="@{'/delete?id='+${sub.id}}"></a>
+                            </div>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

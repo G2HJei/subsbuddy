@@ -13,16 +13,16 @@ public class ErrorHandlerController {
 
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	public String handleMaxUploadSizeExceededException(HttpServletRequest request) {
-		return WebUtils.getErrorQueryParamRedirect(request, "File too big. (max 100KB)");
+		return WebUtils.getErrorQueryParamRedirect(request, "error", "File too big. (max 100KB)");
 	}
 
 	@ExceptionHandler(SubsBuddyException.class)
 	public String nonSrtFile(HttpServletRequest request, SubsBuddyException e) {
-		return WebUtils.getErrorQueryParamRedirect(request, e.getMessage());
+		return WebUtils.getErrorQueryParamRedirect(request, "error", e.getMessage());
 	}
 
 	@ExceptionHandler(Exception.class)
 	public String unknownException(HttpServletRequest request, Exception e) {
-		return WebUtils.getErrorQueryParamRedirect(request, "An unexpected error occurred: " + e.getMessage());
+		return WebUtils.getErrorQueryParamRedirect(request, "error", "An unexpected error occurred: " + e.getMessage());
 	}
 }

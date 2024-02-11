@@ -1,6 +1,6 @@
 package xyz.zlatanov.subsbuddy.command.upload;
 
-import static xyz.zlatanov.subsbuddy.domain.Language.ENGLISH;
+import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,16 +21,16 @@ public class UploadFileHandlerImpl implements UploadFileHandler {
 
 	@Override
 	@Transactional
-	public void uploadFile(FileUploadCommand file) {
+	public void uploadFile(UploadFileCommand file) {
 		validateCommand(file);
 		movieSubtitleRepository.insert(new MovieSubtitle()
 				.filename(file.filename())
-				.language(ENGLISH)
+				.language(EN)
 				.subtitleData(file.content())
 				.owner(file.owner()));
 	}
 
-	private void validateCommand(FileUploadCommand file) {
+	private void validateCommand(UploadFileCommand file) {
 		if (!file.filename().endsWith(".srt")) {
 			throw new NotSupportedFileType();
 		}
