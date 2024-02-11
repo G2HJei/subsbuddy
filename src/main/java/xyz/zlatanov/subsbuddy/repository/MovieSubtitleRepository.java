@@ -11,4 +11,6 @@ import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 public interface MovieSubtitleRepository extends MongoRepository<MovieSubtitle, String> {
 
 	List<MovieSubtitle> findByOwner(String owner);
+
+	MovieSubtitle findOneByOwnerAndFilename(String owner, String filename);
 }

@@ -5,10 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
-import lombok.val;
 import xyz.zlatanov.subsbuddy.command.upload.FileUploadCommand;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileHandler;
-import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploaded;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
 import xyz.zlatanov.subsbuddy.model.SubtitleFileModel;
 import xyz.zlatanov.subsbuddy.query.availablesubs.AvailableSubsQuery;
@@ -33,13 +31,9 @@ public class HomeService {
 		if (!fileName.endsWith(".srt")) {
 			throw new NotSupportedFileType();
 		}
-		val content = ReadUtils.readUtf8Bytes(bytes);
-		if (!ReadUtils.hasEnglishCharacters(content, 0.2)) {
-			throw new NonEnglishSubtitleUploaded();
-		}
 		uploadFileHandler.uploadFile(new FileUploadCommand()
 				.filename(fileName)
-				.content(content)
+				.content(ReadUtils.readUtf8Bytes(bytes))
 				.owner(owner));
 	}
 }
