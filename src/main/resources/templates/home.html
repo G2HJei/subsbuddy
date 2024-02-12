@@ -41,7 +41,7 @@
             <div class="col-12 col-md-6 mx-auto">
                 <table class="table table-hover table-borderless text-break align-middle mt-2 w-100">
                     <tbody>
-                    <tr th:each="sub : ${model}">
+                    <tr th:each="sub : ${model}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
                         <td>
                             <img height="32px" src="" th:src="@{'/'+${sub.language}+'.png'}" th:alt="${sub.language}"/>
                         </td>
