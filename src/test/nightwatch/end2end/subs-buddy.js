@@ -59,7 +59,7 @@ describe('Subs Buddy Test Suite', function () {
 	});
 
 	it('No files remain', function (browser) {
-		browser.expect.elements('.e2e-test').count.to.equal(0);
+		browser.expect.elements('.e2e-test').count.to.equal(1000); //test fail of the pipeline
 	});
 
 	after(function (browser) {
