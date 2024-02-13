@@ -11,6 +11,7 @@ env:
 jobs:
   Build-RC:
     runs-on: ubuntu-latest
+
     steps:
       # COMMIT STAGE
       ##############
@@ -36,7 +37,6 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: DockerHub > push (${{ env.BUILD_NUMBER}})
-        id: push_with_build_number
         uses: docker/build-push-action@v5
         with:
           context: .
@@ -79,13 +79,8 @@ jobs:
 
       # CLEAN UP
       ###########
-  Clean-up:
-    if: always()
-    needs: [ Build-RC ]
-    runs-on: ubuntu-latest
-    steps:
       - name: Delete build number tag
-        if: steps.push_with_build_number.outcome == 'success'
+        if: always()
         run: |
           JWT_TOKEN=$(curl  --location 'https://hub.docker.com/v2/users/login' --header 'Content-Type: application/json' \
                             --data-raw '{"username":"${{ secrets.DOCKER_USERNAME }}", "password":"${{ secrets.DOCKER_PASSWORD }}"}' \
