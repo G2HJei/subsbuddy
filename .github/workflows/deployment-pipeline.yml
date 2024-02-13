@@ -51,7 +51,8 @@ jobs:
           docker rm subs-buddy || true; 
           docker image prune -a -f; 
           docker pull ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}; 
-          docker run -d -p 8080:8080 --net docker-internal-bridge --name subs-buddy -e DB_URL=mongodb:27017/subs-buddy ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
+          docker run -d -p 8080:8080 --net docker-internal-bridge \--name subs-buddy \
+            -e DB_URL=mongodb:27017/subs-buddy ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
           "
 
       - name: Setup Node.js
@@ -82,5 +83,9 @@ jobs:
       - name: Delete build number tag
         if: steps.push_with_build_number.outcome == 'success'
         run: |
-          JWT_TOKEN=$(curl --location 'https://hub.docker.com/v2/users/login' --header 'Content-Type: application/json' --data-raw '{"username":"${{ secrets.DOCKER_USERNAME }}", "password":"${{ secrets.DOCKER_PASSWORD }}"}' | jq -r '.token')
-          curl --location --request DELETE 'https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/subs-buddy/tags/${{ env.BUILD_NUMBER }}' --header "Authorization: JWT $JWT_TOKEN"
+          JWT_TOKEN=$(curl  --location 'https://hub.docker.com/v2/users/login' \
+                            --header 'Content-Type: application/json' \
+                            --data-raw '{"username":"${{ secrets.DOCKER_USERNAME }}", "password":"${{ secrets.DOCKER_PASSWORD }}"}' \
+                    | jq -r '.token')
+          curl --location --request DELETE 'https://hub.docker.com/v2/repositories/${{ secrets.DOCKER_USERNAME }}/subs-buddy/tags/${{ env.BUILD_NUMBER }}' \
+                --header "Authorization: JWT $JWT_TOKEN"
