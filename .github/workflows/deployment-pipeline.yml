@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: DockerHub > push (${{ env.BUILD_NUMBER}})
+      - name: DockerHub > push (${{ env.BUILD_NUMBER }})
         uses: docker/build-push-action@v5
         with:
           context: .
