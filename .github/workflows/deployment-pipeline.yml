@@ -11,7 +11,6 @@ env:
 jobs:
   Build-RC:
     runs-on: ubuntu-latest
-
     steps:
       # COMMIT STAGE
       ##############
@@ -80,6 +79,11 @@ jobs:
 
       # CLEAN UP
       ###########
+  Clean-up:
+    if: always()
+    needs: [ Build-RC ]
+    runs-on: ubuntu-latest
+    steps:
       - name: Delete build number tag
         if: steps.push_with_build_number.outcome == 'success'
         run: |
