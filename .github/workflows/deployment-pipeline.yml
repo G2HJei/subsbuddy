@@ -5,6 +5,9 @@ on:
   push:
     branches: [ "master" ]
 
+env:
+  BUILD_NUMBER: RC.${{ github.run_id }}.${{ github.run_number }}
+
 jobs:
   Build-RC:
     runs-on: ubuntu-latest
@@ -33,21 +36,21 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: DockerHub > push
+      - name: DockerHub > push ($BUILD_NUMBER)
         uses: docker/build-push-action@v5
         with:
           context: .
           push: true
-          tags: ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
+          tags: ${{secrets.DOCKER_USERNAME}}/subs-buddy:$BUILD_NUMBER
 
       - name: Deploy @ TEST
         run: >
           sshpass -p "${{secrets.VPS_PASS}}" ssh -o "StrictHostKeyChecking no" root@${{secrets.VPS_IP}} "
           docker stop subs-buddy || true; 
           docker rm subs-buddy || true; 
-          docker rmi ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
-          docker pull ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc; 
-          docker run -d -p 8080:8080 --net docker-internal-bridge --name subs-buddy -e DB_URL=mongodb:27017/subs-buddy ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc
+          docker image prune -a -f; 
+          docker pull ${{secrets.DOCKER_USERNAME}}/subs-buddy:$BUILD_NUMBER; 
+          docker run -d -p 8080:8080 --net docker-internal-bridge --name subs-buddy -e DB_URL=mongodb:27017/subs-buddy ${{secrets.DOCKER_USERNAME}}/subs-buddy:$BUILD_NUMBER
           "
 
       - name: Setup Node.js
@@ -67,6 +70,9 @@ jobs:
 
       # DEPLOY STAGE
       ##############
-      - name: Deploy @ PROD
-        run: >
-          echo "Deploying to PROD environment..."
+      - name: DockerHub > promote to RC
+        run: |
+          docker tag ${{secrets.DOCKER_USERNAME}}/subs-buddy:$BUILD_NUMBER ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc &&
+          docker push ${{secrets.DOCKER_USERNAME}}/subs-buddy:rc &&
+          docker rmi ${{secrets.DOCKER_USERNAME}}/subs-buddy:$BUILD_NUMBER &&
+          echo "Release candidate ready to be deployed to PROD environment..."
