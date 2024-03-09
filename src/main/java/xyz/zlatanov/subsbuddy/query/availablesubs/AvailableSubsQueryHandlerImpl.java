@@ -12,7 +12,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 	private MovieSubtitleRepository repository;
 
 	@Override
-	public AvailableSubsProjection list(AvailableSubsQuery query) {
+	public AvailableSubsProjection execute(AvailableSubsQuery query) {
 		return new AvailableSubsProjection(
 				repository.findByOwner(query.owner()).stream()
 						.map(m -> new SubDetails(m.id(), m.filename(), m.language().toString()))

@@ -28,17 +28,17 @@ class AvailableSubsQueryHandlerImplTest {
 
 	@Test
 	void list_variableOwners_returnsSelectedOwner() {
-		assertEquals(1, handler.list(new AvailableSubsQuery().owner("owner1")).result().size());
+		assertEquals(1, handler.execute(new AvailableSubsQuery().owner("owner1")).result().size());
 	}
 
 	@Test
 	void list_noSelectedOwner_returnsEmpty() {
-		assertTrue(handler.list(new AvailableSubsQuery().owner(null)).result().isEmpty());
+		assertTrue(handler.execute(new AvailableSubsQuery().owner(null)).result().isEmpty());
 
 	}
 
 	@Test
 	void list_otherOwners_returnsEmpty() {
-		assertTrue(handler.list(new AvailableSubsQuery().owner("owner2")).result().isEmpty());
+		assertTrue(handler.execute(new AvailableSubsQuery().owner("owner2")).result().isEmpty());
 	}
 }

@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
+import lombok.val;
+import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommand;
+import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.exception.AlreadyUploaded;
 import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploaded;
@@ -15,19 +18,21 @@ import xyz.zlatanov.subsbuddy.util.ReadUtils;
 
 @Service
 @AllArgsConstructor
-public class UploadFileHandlerImpl implements UploadFileHandler {
+public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 
-	private MovieSubtitleRepository movieSubtitleRepository;
+	private MovieSubtitleRepository		movieSubtitleRepository;
+	private TranslateFileCommandHandler	translateFileCommandHandler;
 
 	@Override
 	@Transactional
-	public void uploadFile(UploadFileCommand file) {
+	public void execute(UploadFileCommand file) {
 		validateCommand(file);
-		movieSubtitleRepository.insert(new MovieSubtitle()
+		val sub = movieSubtitleRepository.insert(new MovieSubtitle()
 				.filename(file.filename())
 				.language(EN)
 				.subtitleData(file.content())
 				.owner(file.owner()));
+		translateFileCommandHandler.execute(new TranslateFileCommand().id(sub.id()));
 	}
 
 	private void validateCommand(UploadFileCommand file) {

@@ -6,9 +6,9 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommand;
-import xyz.zlatanov.subsbuddy.command.delete.DeleteFileHandler;
+import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommandHandler;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommand;
-import xyz.zlatanov.subsbuddy.command.upload.UploadFileHandler;
+import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommandHandler;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
 import xyz.zlatanov.subsbuddy.model.SubtitleFileModel;
 import xyz.zlatanov.subsbuddy.query.availablesubs.AvailableSubsQuery;
@@ -20,11 +20,11 @@ import xyz.zlatanov.subsbuddy.util.ReadUtils;
 public class HomeService {
 
 	private AvailableSubsQueryHandler	availableSubsQueryHandler;
-	private UploadFileHandler			uploadFileHandler;
-	private DeleteFileHandler			deleteFileHandler;
+	private UploadFileCommandHandler	uploadFileCommandHandler;
+	private DeleteFileCommandHandler	deleteFileCommandHandler;
 
 	public List<SubtitleFileModel> getModel(String owner) {
-		return availableSubsQueryHandler.list(new AvailableSubsQuery().owner(owner))
+		return availableSubsQueryHandler.execute(new AvailableSubsQuery().owner(owner))
 				.result().stream()
 				.map(d -> new SubtitleFileModel(d.id(), d.filename(), d.language()))
 				.toList();
@@ -34,13 +34,13 @@ public class HomeService {
 		if (!fileName.endsWith(".srt")) {
 			throw new NotSupportedFileType();
 		}
-		uploadFileHandler.uploadFile(new UploadFileCommand()
+		uploadFileCommandHandler.execute(new UploadFileCommand()
 				.filename(fileName)
 				.content(ReadUtils.readUtf8Bytes(bytes))
 				.owner(owner));
 	}
 
 	public void delete(String id) {
-		deleteFileHandler.deleteFile(new DeleteFileCommand().id(id));
+		deleteFileCommandHandler.execute(new DeleteFileCommand().id(id));
 	}
 }
