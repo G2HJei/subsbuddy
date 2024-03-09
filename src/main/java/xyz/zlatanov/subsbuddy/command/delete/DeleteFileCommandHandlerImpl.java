@@ -8,13 +8,13 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
 @Service
 @AllArgsConstructor
-public class DeleteFileHandlerImpl implements DeleteFileHandler {
+public class DeleteFileCommandHandlerImpl implements DeleteFileCommandHandler {
 
 	private MovieSubtitleRepository movieSubtitleRepository;
 
 	@Override
 	@Transactional
-	public void deleteFile(DeleteFileCommand command) {
+	public void execute(DeleteFileCommand command) {
 		movieSubtitleRepository.deleteById(command.id());
 	}
 }

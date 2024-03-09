@@ -3,11 +3,12 @@ package xyz.zlatanov.subsbuddy.command.upload;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.exception.AlreadyUploaded;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
@@ -16,22 +17,28 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 public class FileUploadHandlerImplTest {
 
 	MovieSubtitleRepository	movieSubtitleRepository	= mock(MovieSubtitleRepository.class);
-	UploadFileHandler		handler					= new UploadFileHandlerImpl(movieSubtitleRepository);
+	TranslateFileCommandHandler translateFileHandler	= mock(TranslateFileCommandHandler.class);
+	UploadFileCommandHandler handler					= new UploadFileCommandHandlerImpl(movieSubtitleRepository, translateFileHandler);
+
+	@BeforeEach
+	void setup() {
+		doNothing().when(translateFileHandler).execute(any());
+	}
 
 	@Test
 	void uploadFile_validFile_returns() {
 		when(movieSubtitleRepository.insert((MovieSubtitle) any())).thenReturn(new MovieSubtitle());
-		assertDoesNotThrow(() -> handler.uploadFile(new UploadFileCommand().filename("test.srt").content("test")));
+		assertDoesNotThrow(() -> handler.execute(new UploadFileCommand().filename("test.srt").content("test")));
 	}
 
 	@Test
 	void uploadFile_nonSrtFile_throws() {
-		assertThrows(NotSupportedFileType.class, () -> handler.uploadFile(new UploadFileCommand().filename("test.zip")));
+		assertThrows(NotSupportedFileType.class, () -> handler.execute(new UploadFileCommand().filename("test.zip")));
 	}
 
 	@Test
 	void uploadFile_alreadyUploaded_throws(){
 		when(movieSubtitleRepository.findOneByOwnerAndFilename("me", "alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
-		assertThrows(AlreadyUploaded.class, () -> handler.uploadFile(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
+		assertThrows(AlreadyUploaded.class, () -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
 	}
 }

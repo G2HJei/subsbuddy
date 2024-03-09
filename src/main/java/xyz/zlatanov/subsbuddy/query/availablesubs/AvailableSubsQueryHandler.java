@@ -1,6 +1,6 @@
 package xyz.zlatanov.subsbuddy.query.availablesubs;
 
-public interface AvailableSubsQueryHandler {
+import xyz.zlatanov.subsbuddy.query.QueryHandler;
 
-	AvailableSubsProjection list(AvailableSubsQuery query);
+public interface AvailableSubsQueryHandler extends QueryHandler<AvailableSubsProjection, AvailableSubsQuery> {
 }
