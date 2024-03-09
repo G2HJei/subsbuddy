@@ -36,25 +36,33 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	@Override
 	@Transactional
 	public void execute(TranslateFileCommand command) {
-		val sub = movieSubtitleRepository.findById(command.id()).orElseThrow(TranslationException::new);
-		if (!translationRepository.findBySourceId(sub.id()).isEmpty()) {
+		val sourceSub = movieSubtitleRepository.findById(command.id()).orElseThrow(TranslationException::new);
+		if (!translationRepository.findBySourceId(sourceSub.id()).isEmpty()) {
 			throw new TranslationException("This subtitle has already been translated.");
 		}
-		if (sub.language() != EN) {
+		if (sourceSub.language() != EN) {
 			throw new TranslationException("Translation non-English subtitles is not supported");
 		}
-		val splitLinesProjection = splitLinesQueryHandler.execute(new SplitLinesQuery().subtitleData(sub.subtitleData()));
-		val translatedSubsLines = splitLinesProjection.lineList().stream()
-				.map(l -> new SubsLine()
-						.start(l.start())
-						.end(l.end())
-						.text(translateTextQueryHandler.execute(new TranslateTextQuery().text(l.text())).text()))
-				.toList();
-		val subsContentFormatted = formatSubsQueryHandler.execute(new FormatSubsContentQuery().linesList(translatedSubsLines));
-		val subBg = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename(sub.filename())
-				.language(BG)
-				.subtitleData(subsContentFormatted.content()));
-		translationRepository.save(new Translation().sourceId(sub.id()).translationId(subBg.id()));
+		val matchedByHashCode = movieSubtitleRepository.findBySourceHashCode(sourceSub.subtitleData().hashCode());
+		if (matchedByHashCode == null) {
+			val splitLinesProjection = splitLinesQueryHandler.execute(new SplitLinesQuery().subtitleData(sourceSub.subtitleData()));
+			val translatedSubsLines = splitLinesProjection.lineList().stream()
+					.map(l -> new SubsLine()
+							.start(l.start())
+							.end(l.end())
+							.text(translateTextQueryHandler.execute(new TranslateTextQuery().text(l.text())).text()))
+					.toList();
+			val subsContentFormatted = formatSubsQueryHandler.execute(new FormatSubsContentQuery().linesList(translatedSubsLines));
+			val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
+					.filename(sourceSub.filename())
+					.language(BG)
+					.subtitleData(subsContentFormatted.content())
+					.sourceHashCode(sourceSub.hashCode()));
+			translationRepository.save(new Translation().sourceId(sourceSub.id()).translationId(translatedSub.id()));
+		} else {
+			if (translationRepository.findBySourceIdAndTranslationId(sourceSub.id(), matchedByHashCode.id()) == null) {
+				translationRepository.save(new Translation().sourceId(sourceSub.id()).translationId(matchedByHashCode.id()));
+			}
+		}
 	}
 }

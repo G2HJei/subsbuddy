@@ -38,28 +38,40 @@ class TranslateFileHandlerImplTest {
 
 	String						fileId						= "test";
 	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
+	String						subtitleData				= """
+			1
+			00:01:07,818 --> 00:01:11,572
+			It all began with the forging\s
+			of the Great Rings...
+			""";
 	MovieSubtitle				lotrEn						= new MovieSubtitle()
 			.id(fileId)
 			.owner(fileId)
 			.filename("test.srt")
 			.language(EN)
-			.subtitleData("""
-					1
-					00:01:07,818 --> 00:01:11,572
-					It all began with the forging\s
-					of the Great Rings...
-					""");
+			.subtitleData(subtitleData);
 
 	@Test
 	void translateFile_existingFile_translates() {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
+		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(null);
 		when(splitLinesQueryHandler.execute(any())).thenReturn(new SplitLinesProjection());
 		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
 		when(formatSubsQueryHandler.execute(any())).thenReturn(new FormatSubsQueryProjection());
 		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id("saved"));
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));
+	}
+
+	@Test
+	void translateFile_alreadyTranslated_returns(){
+		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
+		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
+		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(new MovieSubtitle().id("translated"));
+		when(translationRepository.findBySourceIdAndTranslationId("test", "translated")).thenReturn(null);
+		when(translationRepository.save(any())).thenReturn(new Translation());
+		assertDoesNotThrow(()->handler.execute(command));
 	}
 
 	@Test

@@ -12,5 +12,7 @@ public interface TranslationRepository extends MongoRepository<Translation, Stri
 
 	List<Translation> findBySourceId(String sourceId);
 
+	Translation findBySourceIdAndTranslationId(String sourceId, String translationId);
+
 	void deleteAllBySourceId(String sourceId);
 }

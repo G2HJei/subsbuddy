@@ -2,10 +2,10 @@ package xyz.zlatanov.subsbuddy.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.lang.Nullable;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
-import org.springframework.lang.Nullable;
 
 @Data
 @Accessors(fluent = true)
@@ -19,6 +19,6 @@ public class MovieSubtitle {
 	private String		subtitleData;
 	@Nullable
 	private String		owner;
-
-	//todo add hash
+	@Nullable
+	private int			sourceHashCode;
 }
