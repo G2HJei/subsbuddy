@@ -11,4 +11,6 @@ import xyz.zlatanov.subsbuddy.domain.Translation;
 public interface TranslationRepository extends MongoRepository<Translation, String> {
 
 	List<Translation> findBySourceId(String sourceId);
+
+	void deleteAllBySourceId(String sourceId);
 }
