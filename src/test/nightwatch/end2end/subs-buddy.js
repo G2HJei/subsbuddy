@@ -47,12 +47,6 @@ describe('Subs Buddy Test Suite', function () {
 	it('Delete English sub', function (browser) {
 		browser
 			.useCss()
-			.execute(function () {
-				document.querySelectorAll('.visually-hidden')
-					.forEach(function (element) {
-						element.classList.remove('visually-hidden');
-					});
-			})
 			.useXpath()
 			.click('//div[text()="e2e.srt"]/ancestor::tr//a[last()]')
 			.useCss();
