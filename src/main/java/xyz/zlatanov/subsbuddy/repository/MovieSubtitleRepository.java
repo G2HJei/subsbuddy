@@ -12,5 +12,7 @@ public interface MovieSubtitleRepository extends MongoRepository<MovieSubtitle, 
 
 	List<MovieSubtitle> findByOwner(String owner);
 
+	MovieSubtitle findBySourceHashCode(int sourceHashCode);
+
 	MovieSubtitle findOneByOwnerAndFilename(String owner, String filename);
 }
