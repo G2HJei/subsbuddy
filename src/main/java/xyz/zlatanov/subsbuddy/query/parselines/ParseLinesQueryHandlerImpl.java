@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.splitlines;
+package xyz.zlatanov.subsbuddy.query.parselines;
 
 import static org.springframework.util.StringUtils.hasText;
 import static xyz.zlatanov.subsbuddy.util.ReadUtils.hasEnglishCharacters;
@@ -13,25 +13,26 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import lombok.val;
+import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 @Service
-public class SplitLinesQueryHandlerImpl implements SplitLinesQueryHandler {
+public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 
 	private final String	time		= "([\\d:.,]+) --> ([\\d:.,]+)";
 	private final Pattern	timePattern	= Pattern.compile(time, Pattern.DOTALL);
 
 	@Override
-	public SplitLinesProjection execute(SplitLinesQuery query) {
-		final List<SplitLine> lineList = new ArrayList<>();
+	public ParseLinesProjection execute(ParseLinesQuery query) {
+		final List<SubtitleEntry> lineList = new ArrayList<>();
 		val scanner = new Scanner(query.subtitleData());
-		var splitLine = new SplitLine();
+		var splitLine = new SubtitleEntry();
 		while (scanner.hasNextLine()) {
 			val textLine = scanner.nextLine();
 			if (hasText(textLine)) { // skip empty lines
 				val matcher = timePattern.matcher(textLine);
 				if (matcher.matches()) { // next subtitle entry reached
 					lineList.add(splitLine);
-					splitLine = new SplitLine();
+					splitLine = new SubtitleEntry();
 
 					splitLine.start(LocalTime.parse(matcher.group(1).replace(',', '.')));
 					splitLine.end(LocalTime.parse(matcher.group(2).replace(',', '.')));
@@ -42,7 +43,7 @@ public class SplitLinesQueryHandlerImpl implements SplitLinesQueryHandler {
 			}
 		}
 		lineList.add(splitLine);
-		return new SplitLinesProjection()
+		return new ParseLinesProjection()
 				.lineList(lineList.stream()
 						.filter(l -> l.start() != null && l.end() != null) // remove metadata and text before first subtitle entry
 						.filter(l -> hasEnglishCharacters(l.text(), 0))

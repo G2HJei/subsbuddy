@@ -1,11 +1,11 @@
-package xyz.zlatanov.subsbuddy.query.formatsubscontent;
+package xyz.zlatanov.subsbuddy.query.assemblesubscontent;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class FormatSubsQueryProjection {
+public class AssembleSubsContentQueryProjection {
 
 	private String content = "";
 }
