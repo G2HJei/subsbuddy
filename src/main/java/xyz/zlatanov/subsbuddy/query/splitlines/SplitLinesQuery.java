@@ -7,5 +7,5 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class SplitLinesQuery {
 
-	String subtitleData;
+	private String subtitleData;
 }

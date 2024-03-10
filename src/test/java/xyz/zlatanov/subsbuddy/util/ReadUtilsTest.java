@@ -29,7 +29,7 @@ class ReadUtilsTest {
 
 	@Test
 	void verifyEnglishChars_underThreshold_throws() {
-		assertFalse(ReadUtils.hasEnglishCharacters("7357", 0.1));
+		assertFalse(ReadUtils.hasEnglishCharacters("7357", 0));
 		assertFalse(ReadUtils.hasEnglishCharacters("Hulk 12345", 0.5));
 	}
 

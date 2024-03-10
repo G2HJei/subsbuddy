@@ -11,5 +11,5 @@ public class SplitLine {
 
 	private LocalTime	start;
 	private LocalTime	end;
-	private String		text;
+	private String		text	= "";
 }

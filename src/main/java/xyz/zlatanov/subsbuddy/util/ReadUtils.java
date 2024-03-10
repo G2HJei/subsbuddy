@@ -3,7 +3,6 @@ package xyz.zlatanov.subsbuddy.util;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.nio.charset.IllegalCharsetNameException;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import lombok.val;
@@ -20,12 +19,18 @@ public class ReadUtils {
 	}
 
 	public static boolean hasEnglishCharacters(String str, double threshold) {
-		val strTrim = str.replace(" ", "");
-		Matcher matcher = englishLetters.matcher(strTrim);
-		var englishCount = 0L;
-		while (matcher.find()) {
-			englishCount++;
+		val strTrim = str.replaceAll("\\s+", "");
+		if (strTrim.isEmpty()) {
+			return false;
 		}
-		return ((double) englishCount / strTrim.length()) >= threshold;
+		var englishCount = 0L;
+		val englishCountTarget = threshold * strTrim.length();
+		val matcher = englishLetters.matcher(strTrim);
+		while (matcher.find()) {
+			if (++englishCount >= englishCountTarget) {
+				return true;
+			}
+		}
+		return false;
 	}
 }
