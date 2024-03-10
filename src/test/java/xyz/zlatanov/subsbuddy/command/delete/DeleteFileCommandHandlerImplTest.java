@@ -16,7 +16,7 @@ class DeleteFileCommandHandlerImplTest {
 	DeleteFileCommandHandler	handler					= new DeleteFileCommandHandlerImpl(movieSubtitleRepository, translationRepository);
 
 	@Test
-	void deleteFileHandler_deleteFile_returns() {
+	void execute_deleteFile_returns() {
 		doNothing().when(movieSubtitleRepository).deleteById("test");
 		doNothing().when(translationRepository).deleteAllBySourceId("test");
 		assertDoesNotThrow(() -> handler.execute(new DeleteFileCommand().id("test")));
