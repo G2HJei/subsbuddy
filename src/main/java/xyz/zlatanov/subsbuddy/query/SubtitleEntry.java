@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.formatsubscontent;
+package xyz.zlatanov.subsbuddy.query;
 
 import java.time.LocalTime;
 
@@ -7,9 +7,9 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class SubsLine {
+public class SubtitleEntry {
 
 	private LocalTime	start;
 	private LocalTime	end;
-	private String		text;
+	private String		text	= "";
 }

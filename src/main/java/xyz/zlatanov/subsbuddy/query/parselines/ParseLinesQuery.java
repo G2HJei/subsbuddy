@@ -1,11 +1,11 @@
-package xyz.zlatanov.subsbuddy.query.splitlines;
+package xyz.zlatanov.subsbuddy.query.parselines;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class SplitLinesQuery {
+public class ParseLinesQuery {
 
 	private String subtitleData;
 }

@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.translatetext;
+package xyz.zlatanov.subsbuddy.query.parselines;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 @Data
 @Accessors(fluent = true)
-public class TranslateTextProjection {
+public class ParseLinesProjection {
 
-	private List<SubtitleEntry> linesList = new ArrayList<>();
+	private List<SubtitleEntry> lineList = new ArrayList<>();
 }

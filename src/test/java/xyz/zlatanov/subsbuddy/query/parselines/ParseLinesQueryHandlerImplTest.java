@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.splitlines;
+package xyz.zlatanov.subsbuddy.query.parselines;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -8,13 +8,13 @@ import org.junit.jupiter.api.Test;
 
 import lombok.val;
 
-class SplitLinesQueryHandlerImplTest {
+class ParseLinesQueryHandlerImplTest {
 
-	SplitLinesQueryHandler handler = new SplitLinesQueryHandlerImpl();
+	ParseLinesQueryHandler handler = new ParseLinesQueryHandlerImpl();
 
 	@Test
 	void execute_validSub_splits() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32,200 --> 00:00:35,100
 				The world is changed.
@@ -46,7 +46,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_subWithMetadata_removesMetadata() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				Title: Lord of the Rings: The Fellowship of the Ring
 				Director: Peter Jackson
 
@@ -60,7 +60,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_subNoActualText_removesLine() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:12,200 --> 00:00:15,100
 				♪ ♪
@@ -75,7 +75,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_subWithAmbienceInline_removesAmbience() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32,200 --> 00:00:35,100
 				[LOTR music plays]
@@ -90,7 +90,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_subDotMillis_splits() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32.200 --> 00:00:35.100
 				The world is changed.
@@ -103,7 +103,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_noMillis_splits() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32 --> 00:00:35
 				The world is changed.
@@ -116,7 +116,7 @@ class SplitLinesQueryHandlerImplTest {
 
 	@Test
 	void execute_multiLine_splits() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32,200 --> 00:00:35,100
 				The world is changed.
@@ -130,7 +130,7 @@ class SplitLinesQueryHandlerImplTest {
 
 		@Test
 	void execute_multiLineWithNewLines_splits() {
-		val split = handler.execute(new SplitLinesQuery().subtitleData("""
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32,200 --> 00:00:35,100
 				The world is changed.

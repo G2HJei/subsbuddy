@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
-import xyz.zlatanov.subsbuddy.query.formatsubscontent.FormatSubsQueryHandler;
-import xyz.zlatanov.subsbuddy.query.formatsubscontent.FormatSubsQueryProjection;
-import xyz.zlatanov.subsbuddy.query.splitlines.SplitLinesProjection;
-import xyz.zlatanov.subsbuddy.query.splitlines.SplitLinesQueryHandler;
+import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQueryHandler;
+import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQueryProjection;
+import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesProjection;
+import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandler;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextProjection;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandler;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
@@ -29,12 +29,12 @@ class TranslateFileHandlerImplTest {
 
 	MovieSubtitleRepository		movieSubtitleRepository		= mock(MovieSubtitleRepository.class);
 	TranslationRepository		translationRepository		= mock(TranslationRepository.class);
-	SplitLinesQueryHandler		splitLinesQueryHandler		= mock(SplitLinesQueryHandler.class);
+	ParseLinesQueryHandler parseLinesQueryHandler = mock(ParseLinesQueryHandler.class);
 	TranslateTextQueryHandler	translateTextQueryHandler	= mock(TranslateTextQueryHandler.class);
-	FormatSubsQueryHandler		formatSubsQueryHandler		= mock(FormatSubsQueryHandler.class);
+	AssembleSubsContentQueryHandler assembleSubsContentQueryHandler = mock(AssembleSubsContentQueryHandler.class);
 
 	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(movieSubtitleRepository,
-			translationRepository, splitLinesQueryHandler, translateTextQueryHandler, formatSubsQueryHandler);
+			translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsContentQueryHandler);
 
 	String						fileId						= "test";
 	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
@@ -56,9 +56,9 @@ class TranslateFileHandlerImplTest {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
 		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(null);
-		when(splitLinesQueryHandler.execute(any())).thenReturn(new SplitLinesProjection());
+		when(parseLinesQueryHandler.execute(any())).thenReturn(new ParseLinesProjection());
 		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
-		when(formatSubsQueryHandler.execute(any())).thenReturn(new FormatSubsQueryProjection());
+		when(assembleSubsContentQueryHandler.execute(any())).thenReturn(new AssembleSubsContentQueryProjection());
 		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id("saved"));
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));
