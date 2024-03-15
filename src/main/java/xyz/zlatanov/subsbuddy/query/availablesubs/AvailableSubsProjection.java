@@ -13,4 +13,5 @@ import lombok.experimental.Accessors;
 public class AvailableSubsProjection {
 
 	private List<SubDetails> result = new ArrayList<>();
+
 }

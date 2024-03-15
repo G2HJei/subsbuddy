@@ -64,12 +64,12 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 				.language(BG)
 				.subtitleData(subsContentFormatted.content())
 				.sourceHashCode(sourceSub.hashCode()));
-		translationRepository.save(new Translation().sourceId(sourceSub.id()).translationId(translatedSub.id()));
+		translationRepository.save(new Translation().sourceId(sourceSub.id()).translatedId(translatedSub.id()));
 	}
 
 	private void linkTranslation(MovieSubtitle sourceSub, MovieSubtitle matchedByHashCode) {
 		if (translationRepository.findBySourceIdAndTranslationId(sourceSub.id(), matchedByHashCode.id()) == null) {
-			translationRepository.save(new Translation().sourceId(sourceSub.id()).translationId(matchedByHashCode.id()));
+			translationRepository.save(new Translation().sourceId(sourceSub.id()).translatedId(matchedByHashCode.id()));
 		}
 	}
 }
