@@ -79,7 +79,7 @@ class ParseLinesQueryHandlerImplTest {
 				1
 				00:00:32,200 --> 00:00:35,100
 				[LOTR music plays]
-				
+
 				2
 				00:00:40,100 --> 00:00:45,200
 				The world is changed.
@@ -125,21 +125,60 @@ class ParseLinesQueryHandlerImplTest {
 		assertEquals(1, split.lineList().size());
 		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
 		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
-		assertEquals("The world is changed.\nI feel it in the water.", split.lineList().getFirst().text());
+		assertEquals("The world is changed. I feel it in the water.", split.lineList().getFirst().text());
 	}
 
-		@Test
+	@Test
 	void execute_multiLineWithNewLines_splits() {
 		val split = handler.execute(new ParseLinesQuery().subtitleData("""
 				1
 				00:00:32,200 --> 00:00:35,100
 				The world is changed.
-				
+
 				I feel it in the water.
 				"""));
 		assertEquals(1, split.lineList().size());
 		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
 		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
-		assertEquals("The world is changed.\nI feel it in the water.", split.lineList().getFirst().text());
+		assertEquals("The world is changed. I feel it in the water.", split.lineList().getFirst().text());
+	}
+
+	@Test
+	void execute_htmlTagsString_splits() {
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
+				1
+				00:00:32,200 --> 00:00:35,100
+				<i>The <b>world</b> is changed.</i>
+				"""));
+		assertEquals(1, split.lineList().size());
+		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
+		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
+		assertEquals("The world is changed.", split.lineList().getFirst().text());
+	}
+
+	@Test
+	void execute_squareBracketsString_splits() {
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
+				1
+				00:00:32,200 --> 00:00:35,100
+				[Music] The world is changed.
+				"""));
+		assertEquals(1, split.lineList().size());
+		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
+		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
+		assertEquals("The world is changed.", split.lineList().getFirst().text());
+	}
+
+	@Test
+	void execute_asterisksBracketsString_splits() {
+		val split = handler.execute(new ParseLinesQuery().subtitleData("""
+				1
+				00:00:32,200 --> 00:00:35,100
+				*Music* The world is changed.
+				"""));
+		assertEquals(1, split.lineList().size());
+		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
+		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
+		assertEquals("The world is changed.", split.lineList().getFirst().text());
 	}
 }
