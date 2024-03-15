@@ -3,9 +3,10 @@
 <head>
     <title>Subs Buddy</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" th:href="@{/subs-buddy.css}">
 </head>
 <body>
 <section class="mt-3">
@@ -45,7 +46,13 @@
                     <tbody>
                     <tr th:each="sub : ${model}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
                         <td>
-                            <img height="32px" src="" th:src="@{'/'+${sub.language}+'.png'}" th:alt="${sub.language}"/>
+                            <img height="32px" class="highlight" src="" th:src="@{'/'+${sub.language}+'.png'}"
+                                 th:alt="${sub.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                        </td>
+                        <td>
+                            <img th:each="translation: ${sub.translations}" height="32px" src="" class="highlight"
+                                 th:src="@{'/'+${translation.key}+'.png'}" th:alt="${translation.key}"
+                                 data-bs-toggle="tooltip" data-bs-title="Download"/>
                         </td>
                         <td>
                             <div class="row mx-0" th:text="${sub.filename}">
@@ -54,8 +61,8 @@
                         </td>
                         <td>
                             <div class="d-flex justify-content-end gap-1">
-                                <a class="bi bi-file-earmark-x text-danger fs-4"
-                                   th:href="@{'/delete?id='+${sub.id}}"></a>
+                                <a class="bi bi-file-earmark-x text-secondary fs-4" data-bs-toggle="tooltip"
+                                   data-bs-title="Delete" th:href="@{'/delete?id='+${sub.id}}"></a>
                             </div>
                         </td>
                     </tr>
@@ -64,6 +71,10 @@
             </div>
         </div>
     </div>
+    <script th:inline="javascript">
+		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
 </section>
 </body>
 </html>

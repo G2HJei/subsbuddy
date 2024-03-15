@@ -1,6 +1,8 @@
 package xyz.zlatanov.subsbuddy.service;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -26,7 +28,12 @@ public class HomeService {
 	public List<SubtitleFileModel> getModel(String owner) {
 		return availableSubsQueryHandler.execute(new AvailableSubsQuery().owner(owner))
 				.result().stream()
-				.map(d -> new SubtitleFileModel(d.id(), d.filename(), d.language()))
+				.map(d -> new SubtitleFileModel()
+						.id(d.id())
+						.filename(d.filename())
+						.language(d.language())
+						.translations(d.translations().entrySet().stream()
+								.collect(Collectors.toMap(k -> k.getKey().name(), Map.Entry::getValue))))
 				.toList();
 	}
 

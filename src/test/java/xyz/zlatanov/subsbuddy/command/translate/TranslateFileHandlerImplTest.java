@@ -69,7 +69,7 @@ class TranslateFileHandlerImplTest {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
 		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(new MovieSubtitle().id("translated"));
-		when(translationRepository.findBySourceIdAndTranslationId("test", "translated")).thenReturn(null);
+		when(translationRepository.findBySourceIdAndTranslatedId("test", "translated")).thenReturn(null);
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(()->handler.execute(command));
 	}

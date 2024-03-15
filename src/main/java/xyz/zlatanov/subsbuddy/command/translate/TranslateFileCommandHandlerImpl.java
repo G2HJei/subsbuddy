@@ -68,7 +68,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	}
 
 	private void linkTranslation(MovieSubtitle sourceSub, MovieSubtitle matchedByHashCode) {
-		if (translationRepository.findBySourceIdAndTranslationId(sourceSub.id(), matchedByHashCode.id()) == null) {
+		if (translationRepository.findBySourceIdAndTranslatedId(sourceSub.id(), matchedByHashCode.id()) == null) {
 			translationRepository.save(new Translation().sourceId(sourceSub.id()).translatedId(matchedByHashCode.id()));
 		}
 	}

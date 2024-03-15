@@ -1,0 +1,7 @@
+.bi-file-earmark-x:hover {
+    color: var(--bs-danger) !important;
+}
+
+.highlight:hover {
+    -webkit-filter: brightness(133%);
+}
