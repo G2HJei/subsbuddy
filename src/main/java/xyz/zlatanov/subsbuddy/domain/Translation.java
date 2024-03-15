@@ -12,5 +12,5 @@ public class Translation {
 
 	private String	id;
 	private String	sourceId;
-	private String	translationId;
+	private String translatedId;
 }
