@@ -10,7 +10,6 @@ import java.util.Scanner;
 import java.util.regex.Pattern;
 
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import lombok.val;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
@@ -53,20 +52,15 @@ public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 	}
 
 	private static String trimLine(String input) {
-		if (input.isEmpty()) {
-			return input;
-		}
-		String[] lines = input.split("\r?\n");
-		final List<String> chunks = new ArrayList<>();
-		for (int i = 0; i < lines.length; i++) {
-			var line = lines[i];
-			if ((i == lines.length - 1 && line.matches("\\d+"))// last line is the line number of the next subtitle entry
-					|| !StringUtils.hasLength(line)
-					|| (line.startsWith("[") && line.endsWith("]"))) { // ambience text
-				continue;
-			}
-			chunks.add(line);
-		}
-		return String.join("\n", chunks);
+		return input
+				.replaceAll("([.!?])([^\\s])", "$1 $2") 	// add spaces after punctuation
+				.replaceAll("\r?\n", " ") 				// new lines
+				.replaceAll("\\s{2,}", " ") 				// double whitespaces
+				.replaceAll("<.*?>", "") 					// <b></b>
+				.replaceAll("\\[.*?]", "") 				// [man enters]
+				.replaceAll("\\*.*?\\*", "")  			// *man enters*
+				.trim()
+				.replaceAll("\\d+$", "")					// Neo! 123
+				.trim();
 	}
 }
