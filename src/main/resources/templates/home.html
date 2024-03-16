@@ -53,8 +53,17 @@
                         </td>
                         <td>
                             <a th:each="translation: ${sub.translations}" th:href="'/download?id='+${translation.id}">
-                                <img height="32px" src="" class="highlight" th:src="@{'/'+${translation.language}+'.png'}"
-                                     th:alt="${translation.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                                <img th:if="${translation.status eq 'COMPLETED'}"
+                                     height="32px" src="" class="highlight"
+                                     th:src="@{'/'+${translation.language}+'.png'}"
+                                     th:alt="${translation.language}" data-bs-toggle="tooltip"
+                                     data-bs-title="Download"/>
+                                <img th:if="${translation.status ne 'COMPLETED'}"
+                                     height="32px" src="" class="greyed-out"
+                                     th:src="@{'/'+${translation.language}+'.png'}"
+                                     th:alt="${translation.language}" data-bs-toggle="tooltip"
+                                     th:data-bs-title="${translation.status eq 'FAILED' ? 'An error occurred. Sorry.' : 'Translating... please check back later.'}"
+                                     data-bs-title="Download"/>
                             </a>
                         </td>
                         <td>

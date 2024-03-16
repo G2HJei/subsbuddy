@@ -5,3 +5,7 @@
 .highlight:hover {
     -webkit-filter: brightness(133%);
 }
+
+.greyed-out {
+    filter: grayscale(100%);
+}
