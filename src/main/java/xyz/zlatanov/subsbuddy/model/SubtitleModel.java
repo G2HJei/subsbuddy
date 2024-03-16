@@ -1,7 +1,7 @@
 package xyz.zlatanov.subsbuddy.model;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -10,8 +10,8 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class SubtitleModel {
 
-	private String				id;
-	private String				filename;
-	private String				language;
-	private Map<String, String>	translations	= new LinkedHashMap<>();
+	private String					id;
+	private String					filename;
+	private String					language;
+	private List<TranslationModel>	translations	= new ArrayList<>();
 }
