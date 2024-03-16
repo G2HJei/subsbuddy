@@ -33,9 +33,6 @@ public class TranslateOrchestratorAsync {
 	@Async
 	@Transactional
 	protected void orchestrateTranslation(MovieSubtitle sourceSub, Translation translation) {
-		if (sourceSub != null) {
-			return; // todo remove
-		}
 		try {
 			translation.status(IN_PROGRESS);
 			val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery().subtitleData(sourceSub.subtitleData()));
