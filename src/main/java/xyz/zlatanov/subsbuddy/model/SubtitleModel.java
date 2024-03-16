@@ -8,7 +8,7 @@ import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
-public class SubtitleFileModel {
+public class SubtitleModel {
 
 	private String				id;
 	private String				filename;

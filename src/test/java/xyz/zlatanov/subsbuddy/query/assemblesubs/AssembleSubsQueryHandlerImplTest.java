@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.assemblesubscontent;
+package xyz.zlatanov.subsbuddy.query.assemblesubs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -10,13 +10,13 @@ import org.junit.jupiter.api.Test;
 import lombok.val;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
-class AssembleSubsContentQueryHandlerImplTest {
+class AssembleSubsQueryHandlerImplTest {
 
-	AssembleSubsContentQueryHandler handler = new AssembleSubsContentQueryHandlerImpl();
+	AssembleSubsQueryHandler handler = new AssembleSubsQueryHandlerImpl();
 
 	@Test
 	void execute_simpleLines_assembles() {
-		val query = new AssembleSubsContentQuery()
+		val query = new AssembleSubsQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
 								.start(LocalTime.of(0, 0, 0, 100_000_000))
@@ -49,7 +49,7 @@ class AssembleSubsContentQueryHandlerImplTest {
 
 	@Test
 	void execute_longLine_assemblesWithLineBreak() {
-		val query = new AssembleSubsContentQuery()
+		val query = new AssembleSubsQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
 								.start(LocalTime.of(1, 7, 0))

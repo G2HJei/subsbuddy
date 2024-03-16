@@ -1,8 +1,8 @@
 package xyz.zlatanov.subsbuddy.exception;
 
-public class AlreadyUploaded extends SubsBuddyException {
+public class AlreadyUploadedException extends SubsBuddyException {
 
-	public AlreadyUploaded() {
+	public AlreadyUploadedException() {
 		super("You have already uploaded this file. Please check its translation status.");
 	}
 }

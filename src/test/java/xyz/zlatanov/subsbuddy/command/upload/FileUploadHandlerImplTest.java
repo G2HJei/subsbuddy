@@ -10,8 +10,8 @@ import org.junit.jupiter.api.Test;
 
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.exception.AlreadyUploaded;
-import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
+import xyz.zlatanov.subsbuddy.exception.AlreadyUploadedException;
+import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
 public class FileUploadHandlerImplTest {
@@ -33,12 +33,12 @@ public class FileUploadHandlerImplTest {
 
 	@Test
 	void execute_nonSrtFile_throws() {
-		assertThrows(NotSupportedFileType.class, () -> handler.execute(new UploadFileCommand().filename("test.zip")));
+		assertThrows(NotSupportedFileTypeException.class, () -> handler.execute(new UploadFileCommand().filename("test.zip")));
 	}
 
 	@Test
 	void execute_alreadyUploaded_throws(){
 		when(movieSubtitleRepository.findOneByOwnerAndFilename("me", "alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
-		assertThrows(AlreadyUploaded.class, () -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
+		assertThrows(AlreadyUploadedException.class, () -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
 	}
 }

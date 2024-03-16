@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.sentencedetection;
+package xyz.zlatanov.subsbuddy.query.sentencedetect;
 
 import java.io.InputStream;
 import java.util.List;
@@ -12,12 +12,12 @@ import opennlp.tools.sentdetect.SentenceDetectorME;
 import opennlp.tools.sentdetect.SentenceModel;
 
 @Service
-public class SentenceDetectionQueryHandlerImpl implements SentenceDetectionQueryHandler {
+public class SentenceDetectQueryHandlerImpl implements SentenceDetectQueryHandler {
 
 	private final SentenceDetector sentenceDetector;
 
 	@SneakyThrows
-	public SentenceDetectionQueryHandlerImpl() {
+	public SentenceDetectQueryHandlerImpl() {
 		InputStream inputStream = getClass().getResourceAsStream("/language-models/opennlp-en.bin");
         assert inputStream != null;
         val model = new SentenceModel(inputStream);
@@ -25,9 +25,9 @@ public class SentenceDetectionQueryHandlerImpl implements SentenceDetectionQuery
 	}
 
 	@Override
-	public SentenceDetectionProjection execute(SentenceDetectionQuery query) {
+	public SentenceDetectProjection execute(SentenceDetectQuery query) {
 		val spacePaddedText = addSpacesAfterPunctuation(query.text());
-		return new SentenceDetectionProjection().sentenceList(List.of(sentenceDetector.sentDetect(spacePaddedText)));
+		return new SentenceDetectProjection().sentenceList(List.of(sentenceDetector.sentDetect(spacePaddedText)));
 	}
 
 	public static String addSpacesAfterPunctuation(String input) {

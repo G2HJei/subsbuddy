@@ -46,13 +46,16 @@
                     <tbody>
                     <tr th:each="sub : ${model}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
                         <td>
-                            <img height="32px" class="highlight" src="" th:src="@{'/'+${sub.language}+'.png'}"
-                                 th:alt="${sub.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                            <a th:href="'/download?id='+${sub.id}">
+                                <img height="32px" class="highlight" src="" th:src="@{'/'+${sub.language}+'.png'}"
+                                     th:alt="${sub.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                            </a>
                         </td>
                         <td>
-                            <img th:each="translation: ${sub.translations}" height="32px" src="" class="highlight"
-                                 th:src="@{'/'+${translation.key}+'.png'}" th:alt="${translation.key}"
-                                 data-bs-toggle="tooltip" data-bs-title="Download"/>
+                            <a th:each="translation: ${sub.translations}" th:href="'/download?id='+${translation.value}">
+                                <img height="32px" src="" class="highlight" th:src="@{'/'+${translation.key}+'.png'}"
+                                     th:alt="${translation.key}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                            </a>
                         </td>
                         <td>
                             <div class="row mx-0" th:text="${sub.filename}">
