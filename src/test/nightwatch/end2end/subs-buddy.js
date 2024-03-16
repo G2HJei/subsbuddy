@@ -45,11 +45,7 @@ describe('Subs Buddy Test Suite', function () {
 	});
 
 	it('Delete English sub', function (browser) {
-		browser
-			.useCss()
-			.useXpath()
-			.click('//div[text()="e2e.srt"]/ancestor::tr//a[last()]')
-			.useCss();
+		browser.element('.bi-file-earmark-x').click();
 	});
 
 	it('No files remain', function (browser) {

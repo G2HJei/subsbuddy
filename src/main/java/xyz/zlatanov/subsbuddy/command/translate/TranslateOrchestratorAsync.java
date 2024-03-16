@@ -34,11 +34,6 @@ public class TranslateOrchestratorAsync {
 	@Transactional
 	public void orchestrateTranslation(MovieSubtitle sourceSub, Translation translation) {
 		try {
-			Thread.sleep(30000); // todo remove
-		} catch (InterruptedException e) {
-			throw new RuntimeException(e);
-		}
-		try {
 			translation.status(IN_PROGRESS);
 			val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery().subtitleData(sourceSub.subtitleData()));
 			val translatedSubsLines = translateTextQueryHandler.execute(new TranslateTextQuery().linesList(parsedLines.lineList()));
