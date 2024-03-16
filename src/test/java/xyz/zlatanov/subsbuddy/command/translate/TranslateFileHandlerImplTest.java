@@ -7,6 +7,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
+import static xyz.zlatanov.subsbuddy.domain.Translation.Status.FAILED;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,12 +30,14 @@ class TranslateFileHandlerImplTest {
 
 	MovieSubtitleRepository		movieSubtitleRepository		= mock(MovieSubtitleRepository.class);
 	TranslationRepository		translationRepository		= mock(TranslationRepository.class);
-	ParseLinesQueryHandler parseLinesQueryHandler = mock(ParseLinesQueryHandler.class);
+	ParseLinesQueryHandler		parseLinesQueryHandler		= mock(ParseLinesQueryHandler.class);
 	TranslateTextQueryHandler	translateTextQueryHandler	= mock(TranslateTextQueryHandler.class);
-	AssembleSubsQueryHandler assembleSubsQueryHandler = mock(AssembleSubsQueryHandler.class);
+	AssembleSubsQueryHandler	assembleSubsQueryHandler	= mock(AssembleSubsQueryHandler.class);
 
-	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(movieSubtitleRepository,
-			translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsQueryHandler);
+	TranslateOrchestratorAsync	translateOrchestratorAsync	= new TranslateOrchestratorAsync(
+			movieSubtitleRepository, translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsQueryHandler);
+	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(
+			movieSubtitleRepository, translationRepository, translateOrchestratorAsync);
 
 	String						fileId						= "test";
 	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
@@ -55,7 +58,7 @@ class TranslateFileHandlerImplTest {
 	void execute_existingFile_translates() {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
-		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(null);
+		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED)).thenReturn(null);
 		when(parseLinesQueryHandler.execute(any())).thenReturn(new ParseLinesProjection());
 		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
 		when(assembleSubsQueryHandler.execute(any())).thenReturn(new AssembleSubsQueryProjection());
@@ -68,8 +71,8 @@ class TranslateFileHandlerImplTest {
 	void execute_alreadyTranslated_returns(){
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
-		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(new MovieSubtitle().id("translated"));
-		when(translationRepository.findBySourceIdAndTranslatedId("test", "translated")).thenReturn(null);
+		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED)).thenReturn(new Translation().id("translated"));
+		when(translationRepository.findOneBySourceIdAndTranslatedId("test", "translated")).thenReturn(null);
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(()->handler.execute(command));
 	}

@@ -1,5 +1,7 @@
 package xyz.zlatanov.subsbuddy.repository;
 
+import static xyz.zlatanov.subsbuddy.domain.Translation.Status;
+
 import java.util.List;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -12,7 +14,9 @@ public interface TranslationRepository extends MongoRepository<Translation, Stri
 
 	List<Translation> findBySourceId(String sourceId);
 
-	Translation findBySourceIdAndTranslatedId(String sourceId, String translationId);
+	Translation findOneBySourceIdAndTranslatedId(String sourceId, String translationId);
 
 	void deleteAllBySourceId(String sourceId);
+
+	Translation findOneBySourceHashCodeAndStatusNot(int hashCode, Status status);
 }

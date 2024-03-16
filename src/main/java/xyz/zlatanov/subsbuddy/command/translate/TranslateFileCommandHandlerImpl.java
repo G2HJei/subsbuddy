@@ -1,7 +1,8 @@
 package xyz.zlatanov.subsbuddy.command.translate;
 
-import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
+import static xyz.zlatanov.subsbuddy.domain.Translation.Status.CREATED;
+import static xyz.zlatanov.subsbuddy.domain.Translation.Status.FAILED;
 
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -12,12 +13,6 @@ import lombok.val;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
-import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQuery;
-import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryHandler;
-import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQuery;
-import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandler;
-import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQuery;
-import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandler;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
@@ -25,11 +20,9 @@ import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 @AllArgsConstructor
 public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHandler {
 
-	private MovieSubtitleRepository			movieSubtitleRepository;
-	private TranslationRepository			translationRepository;
-	private ParseLinesQueryHandler			parseLinesQueryHandler;
-	private TranslateTextQueryHandler		translateTextQueryHandler;
-	private AssembleSubsQueryHandler assembleSubsQueryHandler;
+	private MovieSubtitleRepository		movieSubtitleRepository;
+	private TranslationRepository		translationRepository;
+	private TranslateOrchestratorAsync	asyncOrchestrator; // orchestration logic in separate class to allow @Async
 
 	@Async
 	@Override
@@ -37,11 +30,12 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	public void execute(TranslateFileCommand command) {
 		val sourceSub = movieSubtitleRepository.findById(command.id()).orElseThrow(TranslationException::new);
 		validateSourceSub(sourceSub);
-		val matchedByHashCode = movieSubtitleRepository.findBySourceHashCode(sourceSub.subtitleData().hashCode());
-		if (matchedByHashCode == null) {
-			orchestrateTranslation(sourceSub);
+		val existingTranslation = translationRepository.findOneBySourceHashCodeAndStatusNot(sourceSub.subtitleData().hashCode(), FAILED);
+		if (existingTranslation == null) {
+			val translation = translationRepository.save(new Translation().sourceId(command.id()).status(CREATED));
+			asyncOrchestrator.orchestrateTranslation(sourceSub, translation);
 		} else {
-			linkTranslation(sourceSub, matchedByHashCode);
+			linkTranslation(sourceSub, existingTranslation);
 		}
 	}
 
@@ -54,22 +48,10 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 		}
 	}
 
-	private void orchestrateTranslation(MovieSubtitle sourceSub) {
-		val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery().subtitleData(sourceSub.subtitleData()));
-		val translatedSubsLines = translateTextQueryHandler.execute(new TranslateTextQuery().linesList(parsedLines.lineList()));
-		val subsContentFormatted = assembleSubsQueryHandler
-				.execute(new AssembleSubsQuery().linesList(translatedSubsLines.linesList()));
-		val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename(sourceSub.filename())
-				.language(BG)
-				.subtitleData(subsContentFormatted.content())
-				.sourceHashCode(sourceSub.hashCode()));
-		translationRepository.save(new Translation().sourceId(sourceSub.id()).translatedId(translatedSub.id()));
-	}
-
-	private void linkTranslation(MovieSubtitle sourceSub, MovieSubtitle matchedByHashCode) {
-		if (translationRepository.findBySourceIdAndTranslatedId(sourceSub.id(), matchedByHashCode.id()) == null) {
-			translationRepository.save(new Translation().sourceId(sourceSub.id()).translatedId(matchedByHashCode.id()));
-		}
+	private void linkTranslation(MovieSubtitle sourceSub, Translation existingTranslation) {
+		translationRepository.save(new Translation()
+				.sourceId(sourceSub.id())
+				.sourceHashCode(sourceSub.subtitleData().hashCode())
+				.translatedId(existingTranslation.translatedId()));
 	}
 }

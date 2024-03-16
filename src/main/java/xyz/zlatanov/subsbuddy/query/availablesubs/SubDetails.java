@@ -1,20 +1,18 @@
 package xyz.zlatanov.subsbuddy.query.availablesubs;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 import xyz.zlatanov.subsbuddy.domain.Language;
 
-@AllArgsConstructor
-@Getter
+@Data
 @Accessors(fluent = true)
 public class SubDetails {
 
-	private String					id;
-	private String					filename;
-	private String					language;
-	private Map<Language, String>	translations	= new LinkedHashMap<>();
+	private String						id;
+	private String						filename;
+	private Language					language;
+	private List<TranslationDetails>	translations	= new ArrayList<>();
 }

@@ -1,13 +1,13 @@
 package xyz.zlatanov.subsbuddy.service;
 
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import static java.nio.charset.StandardCharsets.UTF_8;
 
-import lombok.val;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
+import lombok.val;
 import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommand;
 import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommandHandler;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommand;
@@ -15,12 +15,11 @@ import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommandHandler;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.model.DownloadModel;
 import xyz.zlatanov.subsbuddy.model.SubtitleModel;
+import xyz.zlatanov.subsbuddy.model.TranslationModel;
 import xyz.zlatanov.subsbuddy.query.availablesubs.AvailableSubsQuery;
 import xyz.zlatanov.subsbuddy.query.availablesubs.AvailableSubsQueryHandler;
 import xyz.zlatanov.subsbuddy.query.download.DownloadFileQueryHandler;
 import xyz.zlatanov.subsbuddy.util.ReadUtils;
-
-import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 @AllArgsConstructor
@@ -37,9 +36,13 @@ public class HomeService {
 				.map(d -> new SubtitleModel()
 						.id(d.id())
 						.filename(d.filename())
-						.language(d.language())
-						.translations(d.translations().entrySet().stream()
-								.collect(Collectors.toMap(k -> k.getKey().name(), Map.Entry::getValue))))
+						.language(d.language().name())
+						.translations(d.translations().stream()
+								.map(t -> new TranslationModel()
+										.id(t.id())
+										.language(t.language().name())
+										.status(t.status().name()))
+								.toList()))
 				.toList();
 	}
 

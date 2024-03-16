@@ -19,6 +19,4 @@ public class MovieSubtitle {
 	private String		subtitleData;
 	@Nullable
 	private String		owner;
-	@Nullable
-	private int			sourceHashCode;
 }

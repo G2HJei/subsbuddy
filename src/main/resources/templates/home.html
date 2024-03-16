@@ -52,9 +52,9 @@
                             </a>
                         </td>
                         <td>
-                            <a th:each="translation: ${sub.translations}" th:href="'/download?id='+${translation.value}">
-                                <img height="32px" src="" class="highlight" th:src="@{'/'+${translation.key}+'.png'}"
-                                     th:alt="${translation.key}" data-bs-toggle="tooltip" data-bs-title="Download"/>
+                            <a th:each="translation: ${sub.translations}" th:href="'/download?id='+${translation.id}">
+                                <img height="32px" src="" class="highlight" th:src="@{'/'+${translation.language}+'.png'}"
+                                     th:alt="${translation.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
                             </a>
                         </td>
                         <td>

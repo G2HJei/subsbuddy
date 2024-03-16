@@ -42,8 +42,8 @@ class AvailableSubsQueryHandlerImplTest {
 		assertEquals(1, projection.result().size());
 		val translations = projection.result().getFirst().translations();
 		assertEquals(1, translations.size());
-		assertTrue(translations.containsKey(BG));
-		assertEquals("translatedId", translations.get(BG));
+		assertTrue(translations.stream().anyMatch(t -> t.language().equals(BG)));
+		assertTrue(translations.stream().anyMatch(t -> "translatedId".equals(t.id())));
 	}
 
 	@Test
