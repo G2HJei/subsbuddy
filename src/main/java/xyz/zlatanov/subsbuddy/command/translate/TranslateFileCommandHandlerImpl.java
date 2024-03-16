@@ -4,7 +4,6 @@ import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.CREATED;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.FAILED;
 
-import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +23,6 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	private TranslationRepository		translationRepository;
 	private TranslateOrchestratorAsync	asyncOrchestrator; // orchestration logic in separate class to allow @Async
 
-	@Async
 	@Override
 	@Transactional
 	public void execute(TranslateFileCommand command) {
