@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.sentencedetection;
+package xyz.zlatanov.subsbuddy.query.sentencedetect;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -7,7 +7,7 @@ import lombok.experimental.Accessors;
 @Data
 @Accessors(fluent = true)
 @EqualsAndHashCode
-public class SentenceDetectionQuery {
+public class SentenceDetectQuery {
 
 	private String text;
 }

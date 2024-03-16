@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.sentencedetection;
+package xyz.zlatanov.subsbuddy.query.sentencedetect;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -6,20 +6,20 @@ import org.junit.jupiter.api.Test;
 
 import lombok.val;
 
-class SentenceDetectionQueryHandlerImplTest {
+class SentenceDetectQueryHandlerImplTest {
 
-	SentenceDetectionQueryHandlerImpl handler = new SentenceDetectionQueryHandlerImpl();
+	SentenceDetectQueryHandlerImpl handler = new SentenceDetectQueryHandlerImpl();
 
 	@Test
 	void execute_singleSentence_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("Happy Rusev day.")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("Happy Rusev day.")).sentenceList();
 		assertEquals(1, sentenceList.size());
 		assertEquals("Happy Rusev day.", sentenceList.getFirst());
 	}
 
 	@Test
 	void execute_twoSentenceText_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("Happy Rusev day. Rusev machka!")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("Happy Rusev day. Rusev machka!")).sentenceList();
 		assertEquals(2, sentenceList.size());
 		assertEquals("Happy Rusev day.", sentenceList.getFirst());
 		assertEquals("Rusev machka!", sentenceList.getLast());
@@ -27,14 +27,14 @@ class SentenceDetectionQueryHandlerImplTest {
 
 	@Test
 	void execute_sentenceWithTitle_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("Mr. Anderson, surprised to see me?")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("Mr. Anderson, surprised to see me?")).sentenceList();
 		assertEquals(1, sentenceList.size());
 		assertEquals("Mr. Anderson, surprised to see me?", sentenceList.getFirst());
 	}
 
 	@Test
 	void execute_textWithPartialSentence_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("nuke them from orbit. Just to be sure.")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("nuke them from orbit. Just to be sure.")).sentenceList();
 		assertEquals(2, sentenceList.size());
 		assertEquals("nuke them from orbit.", sentenceList.getFirst());
 		assertEquals("Just to be sure.", sentenceList.getLast());
@@ -42,7 +42,7 @@ class SentenceDetectionQueryHandlerImplTest {
 
 	@Test
 	void execute_threeSentencesText_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery()
+		val sentenceList = handler.execute(new SentenceDetectQuery()
 				.text("nuke them from orbit. Just to be sure. Alright.")).sentenceList();
 		assertEquals(3, sentenceList.size());
 		assertEquals("nuke them from orbit.", sentenceList.getFirst());
@@ -52,7 +52,7 @@ class SentenceDetectionQueryHandlerImplTest {
 
 	@Test
 	void execute_dialogue_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("Luke, I am your father! -No!")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("Luke, I am your father! -No!")).sentenceList();
 		assertEquals(2, sentenceList.size());
 		assertEquals("Luke, I am your father!", sentenceList.getFirst());
 		assertEquals("-No!", sentenceList.getLast());
@@ -60,7 +60,7 @@ class SentenceDetectionQueryHandlerImplTest {
 
 	@Test
 	void execute_noSeparationSentences_detects() {
-		val sentenceList = handler.execute(new SentenceDetectionQuery().text("Happy Rusev day.Rusev machka!")).sentenceList();
+		val sentenceList = handler.execute(new SentenceDetectQuery().text("Happy Rusev day.Rusev machka!")).sentenceList();
 		assertEquals(2, sentenceList.size());
 		assertEquals("Happy Rusev day.", sentenceList.getFirst());
 		assertEquals("Rusev machka!", sentenceList.getLast());

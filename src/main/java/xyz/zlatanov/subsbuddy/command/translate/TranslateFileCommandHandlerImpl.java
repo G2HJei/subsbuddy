@@ -12,8 +12,8 @@ import lombok.val;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
-import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQuery;
-import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQueryHandler;
+import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQuery;
+import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryHandler;
 import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQuery;
 import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandler;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQuery;
@@ -29,7 +29,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	private TranslationRepository			translationRepository;
 	private ParseLinesQueryHandler			parseLinesQueryHandler;
 	private TranslateTextQueryHandler		translateTextQueryHandler;
-	private AssembleSubsContentQueryHandler	assembleSubsContentQueryHandler;
+	private AssembleSubsQueryHandler assembleSubsQueryHandler;
 
 	@Async
 	@Override
@@ -57,8 +57,8 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	private void orchestrateTranslation(MovieSubtitle sourceSub) {
 		val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery().subtitleData(sourceSub.subtitleData()));
 		val translatedSubsLines = translateTextQueryHandler.execute(new TranslateTextQuery().linesList(parsedLines.lineList()));
-		val subsContentFormatted = assembleSubsContentQueryHandler
-				.execute(new AssembleSubsContentQuery().linesList(translatedSubsLines.linesList()));
+		val subsContentFormatted = assembleSubsQueryHandler
+				.execute(new AssembleSubsQuery().linesList(translatedSubsLines.linesList()));
 		val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
 				.filename(sourceSub.filename())
 				.language(BG)

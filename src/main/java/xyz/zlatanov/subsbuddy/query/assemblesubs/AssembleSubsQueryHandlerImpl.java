@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.assemblesubscontent;
+package xyz.zlatanov.subsbuddy.query.assemblesubs;
 
 import java.time.LocalTime;
 import java.util.LinkedList;
@@ -12,10 +12,10 @@ import opennlp.tools.tokenize.WhitespaceTokenizer;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 @Service
-public class AssembleSubsContentQueryHandlerImpl implements AssembleSubsContentQueryHandler {
+public class AssembleSubsQueryHandlerImpl implements AssembleSubsQueryHandler {
 
 	@Override
-	public AssembleSubsContentQueryProjection execute(AssembleSubsContentQuery query) {
+	public AssembleSubsQueryProjection execute(AssembleSubsQuery query) {
 		val srtString = new StringBuilder();
 		var counter = 1;
 		for (SubtitleEntry entry : query.linesList()) {
@@ -25,7 +25,7 @@ public class AssembleSubsContentQueryHandlerImpl implements AssembleSubsContentQ
 			srtString.append(improveReadability(entry.text())).append("\n\n");
 		}
 
-		return new AssembleSubsContentQueryProjection()
+		return new AssembleSubsQueryProjection()
 				.content(srtString.toString());
 	}
 

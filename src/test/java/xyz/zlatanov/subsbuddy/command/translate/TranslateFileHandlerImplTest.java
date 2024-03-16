@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
-import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQueryHandler;
-import xyz.zlatanov.subsbuddy.query.assemblesubscontent.AssembleSubsContentQueryProjection;
+import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryHandler;
+import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryProjection;
 import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesProjection;
 import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandler;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextProjection;
@@ -31,10 +31,10 @@ class TranslateFileHandlerImplTest {
 	TranslationRepository		translationRepository		= mock(TranslationRepository.class);
 	ParseLinesQueryHandler parseLinesQueryHandler = mock(ParseLinesQueryHandler.class);
 	TranslateTextQueryHandler	translateTextQueryHandler	= mock(TranslateTextQueryHandler.class);
-	AssembleSubsContentQueryHandler assembleSubsContentQueryHandler = mock(AssembleSubsContentQueryHandler.class);
+	AssembleSubsQueryHandler assembleSubsQueryHandler = mock(AssembleSubsQueryHandler.class);
 
 	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(movieSubtitleRepository,
-			translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsContentQueryHandler);
+			translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsQueryHandler);
 
 	String						fileId						= "test";
 	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
@@ -58,7 +58,7 @@ class TranslateFileHandlerImplTest {
 		when(movieSubtitleRepository.findBySourceHashCode(subtitleData.hashCode())).thenReturn(null);
 		when(parseLinesQueryHandler.execute(any())).thenReturn(new ParseLinesProjection());
 		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
-		when(assembleSubsContentQueryHandler.execute(any())).thenReturn(new AssembleSubsContentQueryProjection());
+		when(assembleSubsQueryHandler.execute(any())).thenReturn(new AssembleSubsQueryProjection());
 		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id("saved"));
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));

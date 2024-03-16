@@ -10,9 +10,9 @@ import lombok.val;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommand;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.exception.AlreadyUploaded;
-import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploaded;
-import xyz.zlatanov.subsbuddy.exception.NotSupportedFileType;
+import xyz.zlatanov.subsbuddy.exception.AlreadyUploadedException;
+import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploadedException;
+import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.util.ReadUtils;
 
@@ -37,13 +37,13 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 
 	private void validateCommand(UploadFileCommand file) {
 		if (!file.filename().endsWith(".srt")) {
-			throw new NotSupportedFileType();
+			throw new NotSupportedFileTypeException();
 		}
 		if (movieSubtitleRepository.findOneByOwnerAndFilename(file.owner(), file.filename()) != null) {
-			throw new AlreadyUploaded();
+			throw new AlreadyUploadedException();
 		}
 		if (!ReadUtils.hasEnglishCharacters(file.content(), 0.2)) {
-			throw new NonEnglishSubtitleUploaded();
+			throw new NonEnglishSubtitleUploadedException();
 		}
 	}
 }

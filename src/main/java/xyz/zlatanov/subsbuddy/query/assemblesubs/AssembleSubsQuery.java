@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.query.assemblesubscontent;
+package xyz.zlatanov.subsbuddy.query.assemblesubs;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 @Data
 @Accessors(fluent = true)
-public class AssembleSubsContentQuery {
+public class AssembleSubsQuery {
 
 	private List<SubtitleEntry> linesList = new ArrayList<>();
 }
