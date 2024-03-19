@@ -3,12 +3,14 @@ package xyz.zlatanov.subsbuddy.command.translate;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.*;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQuery;
@@ -21,6 +23,7 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
 @Service
+@Slf4j
 @AllArgsConstructor
 public class TranslateOrchestratorAsync {
 
@@ -45,6 +48,7 @@ public class TranslateOrchestratorAsync {
 					.subtitleData(subsContentFormatted.content()));
 			translation.translatedId(translatedSub.id()).status(COMPLETED);
 		} catch (Exception e) {
+			log.error(ExceptionUtils.getStackTrace(e));
 			translation.status(FAILED);
 		}
 		translationRepository.save(translation);
