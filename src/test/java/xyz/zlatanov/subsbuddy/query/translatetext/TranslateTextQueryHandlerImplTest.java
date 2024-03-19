@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import lombok.val;
-import xyz.zlatanov.subsbuddy.connector.translation.GoogleTranslateTranslationConnector;
+import xyz.zlatanov.subsbuddy.connector.translation.google.GoogleTranslateTranslationConnector;
 import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
