@@ -15,7 +15,7 @@ import lombok.AllArgsConstructor;
 public class GoogleTranslateRestClientConfig {
 
 	@Bean
-	GoogleTranslateRestClient getTaapioRestClient() {
+	GoogleTranslateRestClient getTranslateRestClient() {
 		return Feign.builder()
 				.client(new OkHttpClient())
 				.logger(new Slf4jLogger(GoogleTranslateRestClient.class))
