@@ -27,7 +27,7 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 	@Transactional
 	public void execute(UploadFileCommand file) {
 		validateCommand(file);
-		val sub = movieSubtitleRepository.insert(new MovieSubtitle()
+		val sub = movieSubtitleRepository.save(new MovieSubtitle()
 				.filename(file.filename())
 				.language(EN)
 				.subtitleData(file.content())

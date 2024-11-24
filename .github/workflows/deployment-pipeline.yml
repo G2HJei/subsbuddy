@@ -52,7 +52,9 @@ jobs:
           docker pull ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}; 
           docker run -d -p 8080:8080 --net docker-internal-bridge \--name subs-buddy \
             -e GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID=${{ secrets.GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID }} \
-            -e DB_URL=mongodb:27017/subs-buddy ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
+            -e DB_USER=${{ secrets.DB_USER }} \
+            -e DB_PASS=${{ secrets.DB_PASS }} \
+            -e DB_URL=localhost:5432/subsbuddy ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
           "
 
       - name: Setup Node.js

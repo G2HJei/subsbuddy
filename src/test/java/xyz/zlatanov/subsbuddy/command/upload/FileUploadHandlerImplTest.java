@@ -27,7 +27,7 @@ public class FileUploadHandlerImplTest {
 
 	@Test
 	void execute_validFile_returns() {
-		when(movieSubtitleRepository.insert((MovieSubtitle) any())).thenReturn(new MovieSubtitle());
+		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle());
 		assertDoesNotThrow(() -> handler.execute(new UploadFileCommand().filename("test.srt").content("test")));
 	}
 

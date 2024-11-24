@@ -4,13 +4,13 @@ import static xyz.zlatanov.subsbuddy.domain.Translation.Status;
 
 import java.util.List;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import xyz.zlatanov.subsbuddy.domain.Translation;
 
 @Repository
-public interface TranslationRepository extends MongoRepository<Translation, String> {
+public interface TranslationRepository extends JpaRepository<Translation, String> {
 
 	List<Translation> findBySourceId(String sourceId);
 

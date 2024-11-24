@@ -1,22 +1,25 @@
 package xyz.zlatanov.subsbuddy.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.lang.Nullable;
+import jakarta.persistence.*;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
 
+import static jakarta.persistence.EnumType.STRING;
+import static jakarta.persistence.GenerationType.UUID;
+
 @Data
 @Accessors(fluent = true)
-@Document
+@Entity(name = "movie_subtitles")
 public class MovieSubtitle {
 
 	@Id
+	@GeneratedValue(strategy = UUID)
 	private String		id;
 	private String		filename;
+	@Enumerated(STRING)
 	private Language	language;
+	@Column(columnDefinition = "TEXT")
 	private String		subtitleData;
-	@Nullable
 	private String		owner;
 }
