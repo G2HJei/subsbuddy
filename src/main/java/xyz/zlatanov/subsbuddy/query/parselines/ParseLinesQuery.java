@@ -7,5 +7,6 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class ParseLinesQuery {
 
-	private String subtitleData;
+	private boolean	addSubsBuddyInfo	= false;
+	private String	subtitleData;
 }
