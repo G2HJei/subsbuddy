@@ -13,6 +13,7 @@ import java.math.MathContext;
 import java.time.Duration;
 import java.util.*;
 
+import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -25,7 +26,7 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 @RequiredArgsConstructor
 public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler {
 
-	private final Duration				mergeLinesThreshold		= Duration.of(50, MILLIS);
+	private final Duration				mergeLinesThreshold	= Duration.of(50, MILLIS);
 
 	private final TranslationConnector	translationConnector;
 
@@ -61,7 +62,8 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 	private void translate(List<SubtitleEntry> selectionBuffer, List<SubtitleEntry> translatedEntries) {
 		val text = String.join(" ", selectionBuffer.stream().map(SubtitleEntry::text).toList());
 		val translatedText = translationConnector.translate(text, EN, BG);
-		translatedEntries.addAll(constructEntries(selectionBuffer, translatedText));
+		val unescapedTranslatedText = StringEscapeUtils.unescapeHtml4(translatedText);
+		translatedEntries.addAll(constructEntries(selectionBuffer, unescapedTranslatedText));
 	}
 
 	private List<SubtitleEntry> constructEntries(List<SubtitleEntry> sourceEntries, String translatedText) {
