@@ -43,20 +43,7 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
 
-      - name: Deploy @ TEST
-        run: >
-          sshpass -p "${{ secrets.VPS_PASS }}" ssh -o "StrictHostKeyChecking no" root@${{ secrets.VPS_IP }} "
-          docker stop subs-buddy || true; 
-          docker rm subs-buddy || true; 
-          docker image prune -a -f; 
-          docker pull ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}; 
-          docker run -d -p 8080:8080 --name subs-buddy --add-host host.docker.internal:host-gateway \
-            -e GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID=${{ secrets.GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID }} \
-            -e DB_USER=${{ secrets.DB_USER }} \
-            -e DB_PASS=${{ secrets.DB_PASS }} \
-            -e DB_URL=host.docker.internal/subsbuddy \
-            ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
-          "
+
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
