@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -17,11 +18,40 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 @Service
 public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 
-	private final String	time		= "([\\d:.,]+) --> ([\\d:.,]+)";
-	private final Pattern	timePattern	= Pattern.compile(time, Pattern.DOTALL);
+	public static final String	INFO_LINE	= "--Translated by 🐻 Subs Buddy--";
+	private final Pattern		timePattern	= Pattern.compile("([\\d:.,]+) --> ([\\d:.,]+)", Pattern.DOTALL);
 
 	@Override
 	public ParseLinesProjection execute(ParseLinesQuery query) {
+		var lineList = getSubtitleEntries(query).stream()
+				.filter(l -> l.start() != null && l.end() != null) // remove metadata and text before first subtitle entry
+				.filter(l -> hasEnglishCharacters(l.text(), 0))
+				.map(l -> l.text(trimLine(l.text())))
+				.filter(l -> hasText(l.text()))
+				.collect(Collectors.toCollection(ArrayList::new));
+		if (query.addSubsBuddyInfo()) {
+			addInfoLine(lineList);
+		}
+		return new ParseLinesProjection().lineList(lineList);
+	}
+
+	private void addInfoLine(final List<SubtitleEntry> lineList) {
+		val first = lineList.getFirst();
+		if (first.start().isAfter(LocalTime.of(0, 0, 5))) {
+			lineList.addFirst(new SubtitleEntry()
+					.start(LocalTime.of(0, 0, 0))
+					.end(LocalTime.of(0, 0, 4))
+					.text(INFO_LINE));
+		} else {
+			lineList.addFirst(new SubtitleEntry()
+					.start(LocalTime.of(0, 0, 0))
+					.end(first.start())
+					.text(INFO_LINE));
+			first.text(INFO_LINE + "\n" + first.text());
+		}
+	}
+
+	private List<SubtitleEntry> getSubtitleEntries(ParseLinesQuery query) {
 		final List<SubtitleEntry> lineList = new ArrayList<>();
 		val scanner = new Scanner(query.subtitleData());
 		var splitLine = new SubtitleEntry();
@@ -42,23 +72,17 @@ public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 			}
 		}
 		lineList.add(splitLine);
-		return new ParseLinesProjection()
-				.lineList(lineList.stream()
-						.filter(l -> l.start() != null && l.end() != null) // remove metadata and text before first subtitle entry
-						.filter(l -> hasEnglishCharacters(l.text(), 0))
-						.map(l -> l.text(trimLine(l.text())))
-						.filter(l -> hasText(l.text()))
-						.toList());
+		return lineList;
 	}
 
 	private static String trimLine(String input) {
 		return input
 				.replaceAll("([.!?])([^\\s])", "$1 $2") 	// add spaces after punctuation
-				.replaceAll("\r?\n", " ") 				// new lines
+				.replaceAll("\r?\n", " ") 					// new lines
 				.replaceAll("\\s{2,}", " ") 				// double whitespaces
 				.replaceAll("<.*?>", "") 					// <b></b>
 				.replaceAll("\\[.*?]", "") 				// [man enters]
-				.replaceAll("\\*.*?\\*", "")  			// *man enters*
+				.replaceAll("\\*.*?\\*", "")  				// *man enters*
 				.trim()
 				.replaceAll("\\d+$", "")					// Neo! 123
 				.trim();

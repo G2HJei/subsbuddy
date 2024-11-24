@@ -1,6 +1,8 @@
 package xyz.zlatanov.subsbuddy.query.parselines;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandlerImpl.INFO_LINE;
 
 import java.time.LocalTime;
 
@@ -180,5 +182,36 @@ class ParseLinesQueryHandlerImplTest {
 		assertEquals(LocalTime.of(0, 0, 32, 200000000), split.lineList().getFirst().start());
 		assertEquals(LocalTime.of(0, 0, 35, 100000000), split.lineList().getFirst().end());
 		assertEquals("The world is changed.", split.lineList().getFirst().text());
+	}
+
+	@Test
+	void shouldAddInfoLine() {
+		val split = handler.execute(new ParseLinesQuery()
+				.addSubsBuddyInfo(true)
+				.subtitleData("""
+						1
+						00:00:32,200 --> 00:00:35,100
+						*Music* The world is changed.
+						"""));
+		assertEquals(2, split.lineList().size());
+		assertTrue(split.lineList().getFirst().text().contains(INFO_LINE));
+	}
+
+	@Test
+	void shouldMergeFirstLineWithInfoLineIfStartIsTooSoon() {
+		val split = handler.execute(new ParseLinesQuery()
+				.addSubsBuddyInfo(true)
+				.subtitleData("""
+						1
+						00:00:04,000 --> 00:00:05,000
+						*Music* The world is changed.
+						"""));
+		assertEquals(2, split.lineList().size());
+		assertEquals(LocalTime.of(0, 0, 0, 0), split.lineList().getFirst().start());
+		assertEquals(LocalTime.of(0, 0, 4, 0), split.lineList().getFirst().end());
+		assertEquals(INFO_LINE, split.lineList().getFirst().text());
+		assertEquals(LocalTime.of(0, 0, 4), split.lineList().get(1).start());
+		assertEquals(LocalTime.of(0, 0, 5), split.lineList().get(1).end());
+		assertEquals(INFO_LINE + "\nThe world is changed.", split.lineList().get(1).text());
 	}
 }
