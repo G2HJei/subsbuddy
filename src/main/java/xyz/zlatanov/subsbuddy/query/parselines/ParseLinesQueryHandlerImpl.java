@@ -36,13 +36,13 @@ public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 	}
 
 	private void addInfoLine(final List<SubtitleEntry> lineList) {
-		val first = lineList.getFirst();
-		if (first.start().isAfter(LocalTime.of(0, 0, 5))) {
+		if (lineList.isEmpty() || lineList.getFirst().start().isAfter(LocalTime.of(0, 0, 10))) {
 			lineList.addFirst(new SubtitleEntry()
 					.start(LocalTime.of(0, 0, 0))
-					.end(LocalTime.of(0, 0, 4))
+					.end(LocalTime.of(0, 0, 10))
 					.text(INFO_LINE));
 		} else {
+			val first = lineList.getFirst();
 			lineList.addFirst(new SubtitleEntry()
 					.start(LocalTime.of(0, 0, 0))
 					.end(first.start())
