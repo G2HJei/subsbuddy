@@ -10,6 +10,8 @@ import feign.okhttp.OkHttpClient;
 import feign.slf4j.Slf4jLogger;
 import lombok.AllArgsConstructor;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+
 @Configuration
 @AllArgsConstructor
 public class GoogleTranslateRestClientConfig {
@@ -20,7 +22,7 @@ public class GoogleTranslateRestClientConfig {
 				.client(new OkHttpClient())
 				.logger(new Slf4jLogger(GoogleTranslateRestClient.class))
 				.logLevel(Logger.Level.FULL)
-				.retryer(Retryer.NEVER_RETRY)
+				.retryer(new Retryer.Default(100L, SECONDS.toMillis(3L), 3))
 				.target(GoogleTranslateRestClient.class, "https://script.google.com");
 	}
 
