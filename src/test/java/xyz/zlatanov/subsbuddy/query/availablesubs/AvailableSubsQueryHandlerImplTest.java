@@ -22,22 +22,25 @@ class AvailableSubsQueryHandlerImplTest {
 
 	MovieSubtitleRepository		movieSubtitleRepo	= mock(MovieSubtitleRepository.class);
 	TranslationRepository		translationRepo		= mock(TranslationRepository.class);
-	AvailableSubsQueryHandler	handler				= new AvailableSubsQueryHandlerImpl(movieSubtitleRepo, translationRepo);
+	AvailableSubsQueryHandler	handler				= new AvailableSubsQueryHandlerImpl(true, movieSubtitleRepo, translationRepo);
 
 	@BeforeEach
-	void setup(){
-		when(movieSubtitleRepo.findByOwner("owner1")).thenReturn(List.of(new MovieSubtitle().id("subtitleId").language(EN).filename("name")));
+	void setup() {
+		when(movieSubtitleRepo.findByOwner("owner1"))
+				.thenReturn(List.of(new MovieSubtitle().id("subtitleId").language(EN).filename("name")));
 		when(movieSubtitleRepo.findByOwner("owner2")).thenReturn(List.of());
 		when(movieSubtitleRepo.findByOwner(null)).thenReturn(List.of());
 		when(translationRepo.findBySourceId("subtitleId")).thenReturn(List.of(
 				new Translation()
-					.id("translationId")
-					.sourceId("id")
-					.translatedId("translatedId")));
+						.id("translationId")
+						.sourceId("id")
+						.translatedId("translatedId")));
+		when(movieSubtitleRepo.findAll())
+				.thenReturn(List.of(new MovieSubtitle(), new MovieSubtitle(), new MovieSubtitle()));
 	}
 
 	@Test
-	void execute_variableOwners_returnsSelectedOwnerWithTranslation() {
+	void shouldFilterOwners() {
 		val projection = handler.execute(new AvailableSubsQuery().owner("owner1"));
 		assertEquals(1, projection.result().size());
 		val translations = projection.result().getFirst().translations();
@@ -47,14 +50,21 @@ class AvailableSubsQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_noSelectedOwner_returnsEmpty() {
+	void shouldFilterOwners2() {
+		assertTrue(handler.execute(new AvailableSubsQuery().owner("owner2")).result().isEmpty());
+	}
+
+	@Test
+	void shouldFilterOwnersWhenNoneDefined() {
 		assertTrue(handler.execute(new AvailableSubsQuery().owner(null)).result().isEmpty());
 
 	}
 
 	@Test
-	void execute_otherOwners_returnsEmpty() {
-		assertTrue(handler.execute(new AvailableSubsQuery().owner("owner2")).result().isEmpty());
+	void shouldIgnoreOwnerFiltering() {
+		val handler = new AvailableSubsQueryHandlerImpl(false, movieSubtitleRepo, translationRepo);
+		val projection = handler.execute(new AvailableSubsQuery().owner("it-doesnt-matter"));
+		assertEquals(3, projection.result().size());
 	}
 
 }

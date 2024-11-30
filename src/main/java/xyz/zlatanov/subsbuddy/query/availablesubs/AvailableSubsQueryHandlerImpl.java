@@ -2,23 +2,34 @@ package xyz.zlatanov.subsbuddy.query.availablesubs;
 
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 
+import lombok.val;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import lombok.AllArgsConstructor;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
 @Service
-@AllArgsConstructor
 public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler {
 
-	private MovieSubtitleRepository	subtitleRepository;
-	private TranslationRepository	translationRepository;
+	private final boolean					enableOwnerFiltering;
+	private final MovieSubtitleRepository	subtitleRepository;
+	private final TranslationRepository		translationRepository;
+
+	public AvailableSubsQueryHandlerImpl(@Value("${ENABLE_OWNER_FILTERING:false}") boolean enableOwnerFiltering,
+			MovieSubtitleRepository subtitleRepository, TranslationRepository translationRepository) {
+		this.enableOwnerFiltering = enableOwnerFiltering;
+		this.subtitleRepository = subtitleRepository;
+		this.translationRepository = translationRepository;
+	}
 
 	@Override
 	public AvailableSubsProjection execute(AvailableSubsQuery query) {
+		val subtitles = enableOwnerFiltering
+				? subtitleRepository.findByOwner(query.owner())
+				: subtitleRepository.findAll();
 		return new AvailableSubsProjection(
-				subtitleRepository.findByOwner(query.owner()).stream()
+				subtitles.stream()
 						.map(m -> new SubDetails()
 								.id(m.id())
 								.filename(m.filename())
