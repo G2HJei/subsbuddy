@@ -27,7 +27,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 	public AvailableSubsProjection execute(AvailableSubsQuery query) {
 		val subtitles = enableOwnerFiltering
 				? subtitleRepository.findByOwner(query.owner())
-				: subtitleRepository.findAll();
+				: subtitleRepository.findByOwnerNotNull();
 		return new AvailableSubsProjection(
 				subtitles.stream()
 						.map(m -> new SubDetails()
