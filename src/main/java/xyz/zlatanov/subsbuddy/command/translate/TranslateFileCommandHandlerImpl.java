@@ -30,8 +30,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 		validateSourceSub(sourceSub);
 		val existingTranslation = translationRepository.findOneBySourceHashCodeAndStatusNot(sourceSub.subtitleData().hashCode(), FAILED);
 		if (existingTranslation == null) {
-			val translation = translationRepository.save(new Translation().sourceId(command.id()).status(CREATED));
-			asyncOrchestrator.orchestrateTranslation(sourceSub, translation);
+			initiateTranslation(command, sourceSub);
 		} else {
 			linkTranslation(sourceSub, existingTranslation);
 		}
@@ -44,6 +43,14 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 		if (sourceSub.language() != EN) {
 			throw new TranslationException("Translating non-English subtitles is not supported");
 		}
+	}
+
+	private void initiateTranslation(TranslateFileCommand command, MovieSubtitle sourceSub) {
+		val translation = translationRepository.save(new Translation()
+				.sourceId(command.id())
+				.sourceHashCode(sourceSub.subtitleData().hashCode())
+				.status(CREATED));
+		asyncOrchestrator.orchestrateTranslation(sourceSub, translation);
 	}
 
 	private void linkTranslation(MovieSubtitle sourceSub, Translation existingTranslation) {
