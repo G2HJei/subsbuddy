@@ -12,5 +12,7 @@ public interface MovieSubtitleRepository extends JpaRepository<MovieSubtitle, St
 
 	List<MovieSubtitle> findByOwner(String owner);
 
+	List<MovieSubtitle> findByOwnerNotNull();
+
 	MovieSubtitle findOneByOwnerAndFilename(String owner, String filename);
 }

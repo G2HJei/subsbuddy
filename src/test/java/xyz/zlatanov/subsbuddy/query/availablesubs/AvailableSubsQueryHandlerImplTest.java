@@ -35,7 +35,7 @@ class AvailableSubsQueryHandlerImplTest {
 						.id("translationId")
 						.sourceId("id")
 						.translatedId("translatedId")));
-		when(movieSubtitleRepo.findAll())
+		when(movieSubtitleRepo.findByOwnerNotNull())
 				.thenReturn(List.of(new MovieSubtitle(), new MovieSubtitle(), new MovieSubtitle()));
 	}
 
