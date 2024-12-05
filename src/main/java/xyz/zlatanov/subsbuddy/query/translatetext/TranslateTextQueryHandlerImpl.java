@@ -13,6 +13,7 @@ import java.math.MathContext;
 import java.time.Duration;
 import java.util.*;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ import opennlp.tools.tokenize.WhitespaceTokenizer;
 import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler {
@@ -61,7 +63,9 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 
 	private void translate(List<SubtitleEntry> selectionBuffer, List<SubtitleEntry> translatedEntries) {
 		val text = String.join(" ", selectionBuffer.stream().map(SubtitleEntry::text).toList());
+		log.debug("Translating {}...", text);
 		val translatedText = translationConnector.translate(text, EN, BG);
+		log.debug("Translated {}", translatedText);
 		val unescapedTranslatedText = StringEscapeUtils.unescapeHtml4(translatedText);
 		translatedEntries.addAll(constructEntries(selectionBuffer, unescapedTranslatedText));
 	}
