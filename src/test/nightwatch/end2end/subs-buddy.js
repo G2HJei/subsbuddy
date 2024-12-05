@@ -12,7 +12,10 @@ describe('Subs Buddy Test Suite', function () {
 		fs.writeFileSync(over1MbFile, Buffer.alloc(1024 * 100 + 1)); // 100KB + 1 byte
 		fs.writeFileSync(nonSrtFile, Buffer.alloc(1));
 		fs.writeFileSync(nonEnglishFile, 'Неанглийски файл.');
-		fs.writeFileSync(englishFile, 'Very English isn\'t it?');
+		fs.writeFileSync(englishFile,
+			'1\n' +
+			'00:00:00,000 --> 00:00:10,000\n' +
+			'Very English isn\'t it?');
 		browser.navigateTo(process.env.SUBS_BUDDY_URL);
 	});
 
