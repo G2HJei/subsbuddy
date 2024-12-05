@@ -2,8 +2,7 @@ package xyz.zlatanov.subsbuddy.query.translatetext;
 
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLowerCase;
-import static java.math.RoundingMode.DOWN;
-import static java.math.RoundingMode.HALF_UP;
+import static java.math.RoundingMode.*;
 import static java.time.temporal.ChronoUnit.MILLIS;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
@@ -63,9 +62,9 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 
 	private void translate(List<SubtitleEntry> selectionBuffer, List<SubtitleEntry> translatedEntries) {
 		val text = String.join(" ", selectionBuffer.stream().map(SubtitleEntry::text).toList());
-		log.debug("Translating {}...", text);
+		log.debug("Translating {}", text);
 		val translatedText = translationConnector.translate(text, EN, BG);
-		log.debug("Translated {}", translatedText);
+		log.debug("         -> {}", translatedText);
 		val unescapedTranslatedText = StringEscapeUtils.unescapeHtml4(translatedText);
 		translatedEntries.addAll(constructEntries(selectionBuffer, unescapedTranslatedText));
 	}
@@ -74,7 +73,7 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 		val entryWeightList = getEntryWeightList(sourceEntries);
 		val weightedTextList = toWeightedText(translatedText, entryWeightList);
 		List<SubtitleEntry> translatedEntries = new ArrayList<>(sourceEntries.size());
-		for (int i = 0; i < sourceEntries.size(); i++) {
+		for (int i = 0; i < sourceEntries.size() && i < weightedTextList.size(); i++) {
 			val sourceEntry = sourceEntries.get(i);
 			translatedEntries.add(new SubtitleEntry()
 					.start(sourceEntry.start())
@@ -102,13 +101,13 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 	}
 
 	private List<String> toWeightedText(String translatedText, List<BigDecimal> entryWeightList) {
+		final Queue<String> tokens = new LinkedList<>(List.of(WhitespaceTokenizer.INSTANCE.tokenize(translatedText)));
 		List<Integer> targetLengthList = entryWeightList.stream()
 				.map(w -> BigDecimal.valueOf(translatedText.length())
 						.multiply(w)
-						.divide(BigDecimal.valueOf(100), HALF_UP)
+						.divide(BigDecimal.valueOf(100), HALF_DOWN)
 						.intValue())
 				.toList();
-		final Queue<String> tokens = new LinkedList<>(List.of(WhitespaceTokenizer.INSTANCE.tokenize(translatedText)));
 		return targetLengthList.stream()
 				.map(targetLength -> {
 					val currentLine = new StringBuilder();
@@ -116,10 +115,12 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 							&& currentLine.length() <= targetLength) {
 						currentLine.append(tokens.poll()).append(" ");
 					}
-					return currentLine
-							.deleteCharAt(currentLine.length() - 1)
-							.toString();
+					return currentLine.isEmpty() ? null
+							: currentLine
+									.deleteCharAt(currentLine.length() - 1)
+									.toString();
 				})
+				.filter(Objects::nonNull)
 				.toList();
 	}
 }

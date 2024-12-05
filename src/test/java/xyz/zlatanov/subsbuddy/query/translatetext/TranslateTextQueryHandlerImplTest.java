@@ -34,7 +34,7 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_singleSentenceEntry_translates() {
+	void shouldTranslateSingleSentenceEntry() {
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(new SubtitleEntry()
 						.start(LocalTime.of(0, 0, 0))
@@ -49,7 +49,7 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_twoEntries_translates() {
+	void shouldTranslateTwoEntries() {
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
@@ -77,7 +77,7 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_multiLineSentence_translates() {
+	void shouldTranslateMultipleSentences() {
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
@@ -106,7 +106,7 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_triLineSentence_translates() {
+	void shouldTranslateTriLineSentence() {
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
@@ -143,7 +143,7 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_twoSentenceLine_translates() {
+	void shouldTranslateTwoSentenceLine() {
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
@@ -160,9 +160,9 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_noSpacingLine_translateWithSpaces() {
+	void ShouldTranslateNoSpacingLine() {
 		when(translationConnector.translate(eq("To be the man you've got to beat the man.If you smell..."), eq(EN), eq(BG)))
-						.thenReturn("TO BE THE MAN YOU'VE GOT TO BEAT THE MAN. IF YOU SMELL...");
+				.thenReturn("TO BE THE MAN YOU'VE GOT TO BEAT THE MAN. IF YOU SMELL...");
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
 						new SubtitleEntry()
@@ -179,9 +179,9 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_twoSentenceLineWithSpecialChars_translates() {
+	void shouldTranslateTwoSentenceLineWithSpecialChars() {
 		when(translationConnector
-				.translate(eq("To be the man you've got to \"beat\" the man. If you smell..."), eq(EN), eq( BG)))
+				.translate(eq("To be the man you've got to \"beat\" the man. If you smell..."), eq(EN), eq(BG)))
 				.thenReturn("TO BE THE MAN YOU'VE GOT TO \"BEAT\" THE MAN. IF YOU SMELL...");
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
@@ -210,12 +210,12 @@ class TranslateTextQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_longPauseTwoLineSentence_translatesSeparately() {
+	void shouldTranslateLongPauseTwoLineSentenceSeparately() {
 		when(translationConnector
-				.translate(eq("To be the man you've got"), eq(EN), eq( BG)))
+				.translate(eq("To be the man you've got"), eq(EN), eq(BG)))
 				.thenReturn("TO BE THE MAN YOU'VE GOT");
 		when(translationConnector
-				.translate(eq("to beat the man. If you smell..."), eq(EN), eq( BG)))
+				.translate(eq("to beat the man. If you smell..."), eq(EN), eq(BG)))
 				.thenReturn("TO BEAT THE MAN. IF YOU SMELL...");
 		val translation = handler.execute(new TranslateTextQuery()
 				.linesList(List.of(
@@ -240,6 +240,42 @@ class TranslateTextQueryHandlerImplTest {
 						.start(LocalTime.of(0, 0, 5))
 						.end(LocalTime.of(0, 0, 6))
 						.text("TO BEAT THE MAN. IF YOU SMELL..."),
+				translation.linesList().getLast());
+	}
+
+	@Test
+	void shouldReduceLineCountWhenNecessary() {
+		val engText = "Which means you are going to waste a whole lot of taxpayer money trying to prove their side when there is no DNA.";
+		val bgText = "Което означава, че ще пропилеете много пари на данъкоплатците, опитвайки се да докажете тяхната страна, когато няма ДНК.";
+		when(translationConnector.translate(eq(engText), eq(EN), eq(BG))).thenReturn(bgText);
+
+		val translation = handler.execute(new TranslateTextQuery()
+				.linesList(List.of(
+						new SubtitleEntry()
+								.start(LocalTime.of(0, 0, 0))
+								.end(LocalTime.of(0, 0, 1))
+								.text("Which means you are going to waste a whole lot of taxpayer money"),
+						new SubtitleEntry()
+								.start(LocalTime.of(0, 0, 1))
+								.end(LocalTime.of(0, 0, 2))
+								.text("trying to prove their side when there is"),
+						new SubtitleEntry()
+								.start(LocalTime.of(0, 0, 2))
+								.end(LocalTime.of(0, 0, 3))
+								.text("no DNA.")
+				)));
+		assertEquals(2, translation.linesList().size());
+		assertEquals(
+				new SubtitleEntry()
+						.start(LocalTime.of(0, 0, 0))
+						.end(LocalTime.of(0, 0, 1))
+						.text("Което означава, че ще пропилеете много пари на данъкоплатците, опитвайки"),
+				translation.linesList().getFirst());
+		assertEquals(
+				new SubtitleEntry()
+						.start(LocalTime.of(0, 0, 1))
+						.end(LocalTime.of(0, 0, 2))
+						.text("се да докажете тяхната страна, когато няма ДНК."),
 				translation.linesList().getLast());
 	}
 }
