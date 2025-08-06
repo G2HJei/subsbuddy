@@ -15,13 +15,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import lombok.val;
-import xyz.zlatanov.subsbuddy.connector.translation.google.GoogleTranslateTranslationConnector;
 import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 class TranslateTextQueryHandlerImplTest {
 
-	TranslationConnector		translationConnector	= mock(GoogleTranslateTranslationConnector.class);
+	TranslationConnector		translationConnector	= mock(TranslationConnector.class);
 	TranslateTextQueryHandler	handler					= new TranslateTextQueryHandlerImpl(translationConnector);
 
 	@BeforeEach
@@ -262,8 +261,7 @@ class TranslateTextQueryHandlerImplTest {
 						new SubtitleEntry()
 								.start(LocalTime.of(0, 0, 2))
 								.end(LocalTime.of(0, 0, 3))
-								.text("no DNA.")
-				)));
+								.text("no DNA."))));
 		assertEquals(2, translation.linesList().size());
 		assertEquals(
 				new SubtitleEntry()
