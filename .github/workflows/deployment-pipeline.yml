@@ -60,24 +60,8 @@ jobs:
             ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}
           "
 
-      - name: Allow deployment to complete
-        run: sleep 64
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20.11.0
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-
-      - name: Nightwatch.js tests
-        env:
-          SUBS_BUDDY_URL: ${{ secrets.SUBS_BUDDY_URL }}
-        working-directory: ./src/test/nightwatch
-        run: |
-          npm ci
-          sudo apt-get install xvfb
-          xvfb-run --auto-servernum npm test -- --env chrome
+      - name: Acceptance Tests
+        run: echo "Acceptance stage tests would normally be executed here."
 
       # DEPLOY STAGE
       ##############

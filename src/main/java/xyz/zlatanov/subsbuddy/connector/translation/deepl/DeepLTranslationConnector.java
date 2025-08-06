@@ -20,10 +20,12 @@ import xyz.zlatanov.subsbuddy.domain.Language;
 @Slf4j
 public class DeepLTranslationConnector implements TranslationConnector {
 
-	private DeepLClient client;
+	@Value("${DEEPL_API_KEY}")
+	private String		apiKey;
+	private DeepLClient	client;
 
 	@PostConstruct
-	public void init(@Value("${DEEPL_API_KEY}") String apiKey) {
+	public void init() {
 		client = new DeepLClient(apiKey);
 		logUsage();
 	}
