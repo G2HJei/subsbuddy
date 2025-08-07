@@ -3,6 +3,7 @@ package xyz.zlatanov.subsbuddy.service;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -34,12 +35,12 @@ public class HomeService {
 		return availableSubsQueryHandler.execute(new AvailableSubsQuery())
 				.result().stream()
 				.map(d -> new SubtitleModel()
-						.id(d.id())
+						.id(d.id().toString())
 						.filename(d.filename())
 						.language(d.language().name())
 						.translations(d.translations().stream()
 								.map(t -> new TranslationModel()
-										.id(t.id())
+										.id(t.id().toString())
 										.language(t.language().name())
 										.status(t.status().name()))
 								.toList()))
@@ -56,13 +57,14 @@ public class HomeService {
 	}
 
 	public DownloadModel download(String id) {
-		val downloadProjection = downloadFileQueryHandler.execute(id);
+		val downloadProjection = downloadFileQueryHandler.execute(UUID.fromString(id));
 		return new DownloadModel()
 				.filename(downloadProjection.filename())
 				.content(downloadProjection.content().getBytes(UTF_8));
 	}
 
 	public void delete(String id) {
-		deleteFileCommandHandler.execute(new DeleteFileCommand().id(id));
+		val idToDelete = UUID.fromString(id);
+		deleteFileCommandHandler.execute(new DeleteFileCommand().id(idToDelete));
 	}
 }

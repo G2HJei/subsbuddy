@@ -18,6 +18,6 @@ public class DeleteFileCommandHandlerImpl implements DeleteFileCommandHandler {
 	@Transactional
 	public void execute(DeleteFileCommand command) {
 		movieSubtitleRepository.deleteById(command.id());
-		translationRepository.deleteAllBySourceId(command.id());
+		translationRepository.deleteAllBySourceSubtitleId(command.id());
 	}
 }

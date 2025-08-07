@@ -37,7 +37,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	}
 
 	private void validateSourceSub(MovieSubtitle sourceSub) {
-		if (!translationRepository.findBySourceId(sourceSub.id()).isEmpty()) {
+		if (!translationRepository.findBySourceSubtitleId(sourceSub.id()).isEmpty()) {
 			throw new TranslationException("This subtitle has already been translated.");
 		}
 		if (sourceSub.language() != EN) {
@@ -47,7 +47,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 
 	private void initiateTranslation(TranslateFileCommand command, MovieSubtitle sourceSub) {
 		val translation = translationRepository.save(new Translation()
-				.sourceId(command.id())
+				.sourceSubtitleId(command.id())
 				.sourceHashCode(sourceSub.subtitleData().hashCode())
 				.status(CREATED));
 		asyncOrchestrator.orchestrateTranslation(sourceSub, translation);
@@ -55,8 +55,8 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 
 	private void linkTranslation(MovieSubtitle sourceSub, Translation existingTranslation) {
 		translationRepository.save(new Translation()
-				.sourceId(sourceSub.id())
+				.sourceSubtitleId(sourceSub.id())
 				.sourceHashCode(sourceSub.subtitleData().hashCode())
-				.translationId(existingTranslation.translationId()));
+				.translatedSubtitleId(existingTranslation.translatedSubtitleId()));
 	}
 }

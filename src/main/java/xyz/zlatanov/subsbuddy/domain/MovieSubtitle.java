@@ -3,6 +3,8 @@ package xyz.zlatanov.subsbuddy.domain;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
 
+import java.util.UUID;
+
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -14,7 +16,7 @@ public class MovieSubtitle {
 
 	@Id
 	@GeneratedValue(strategy = UUID)
-	private String		id;
+	private UUID		id;
 	private String		filename;
 	@Enumerated(STRING)
 	private Language	language;

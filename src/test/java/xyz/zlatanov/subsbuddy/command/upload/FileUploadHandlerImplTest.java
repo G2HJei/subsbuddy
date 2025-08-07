@@ -8,13 +8,14 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import lombok.val;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.exception.AlreadyUploadedException;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
-public class FileUploadHandlerImplTest {
+class FileUploadHandlerImplTest {
 
 	MovieSubtitleRepository		movieSubtitleRepository	= mock(MovieSubtitleRepository.class);
 	TranslateFileCommandHandler	translateFileHandler	= mock(TranslateFileCommandHandler.class);
@@ -33,13 +34,15 @@ public class FileUploadHandlerImplTest {
 
 	@Test
 	void execute_nonSrtFile_throws() {
-		assertThrows(NotSupportedFileTypeException.class, () -> handler.execute(new UploadFileCommand().filename("test.zip")));
+		val uploadFileCommand = new UploadFileCommand().filename("test.zip");
+		assertThrows(NotSupportedFileTypeException.class, () -> handler.execute(uploadFileCommand));
 	}
 
 	@Test
 	void execute_alreadyUploaded_throws() {
 		when(movieSubtitleRepository.findOneByFilename("alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
+		val uploadFileCommand = new UploadFileCommand().filename("alreadyUploaded.srt");
 		assertThrows(AlreadyUploadedException.class,
-				() -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt")));
+				() -> handler.execute(uploadFileCommand));
 	}
 }

@@ -1,5 +1,7 @@
 package xyz.zlatanov.subsbuddy.command.translate;
 
+import java.util.UUID;
+
 import lombok.Data;
 import lombok.experimental.Accessors;
 
@@ -7,5 +9,5 @@ import lombok.experimental.Accessors;
 @Accessors(fluent = true)
 public class TranslateFileCommand {
 
-	private String	id;
+	private UUID id;
 }

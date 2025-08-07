@@ -2,6 +2,7 @@ package xyz.zlatanov.subsbuddy.query.availablesubs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import lombok.Data;
 import lombok.experimental.Accessors;
@@ -11,7 +12,7 @@ import xyz.zlatanov.subsbuddy.domain.Language;
 @Accessors(fluent = true)
 public class SubDetails {
 
-	private String						id;
+	private UUID						id;
 	private String						filename;
 	private Language					language;
 	private List<TranslationDetails>	translations	= new ArrayList<>();

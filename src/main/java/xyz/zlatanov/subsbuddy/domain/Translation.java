@@ -4,6 +4,8 @@ import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.CREATED;
 
+import java.util.UUID;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
@@ -19,10 +21,10 @@ public class Translation {
 
 	@Id
 	@GeneratedValue(strategy = UUID)
-	private String	id;
-	private String	sourceId;
-	private int		sourceHashCode;
-	private String	translationId;
+	private UUID	id;
+	private int		sourceHashCode; // todo move to other class?
+	private UUID	sourceSubtitleId;
+	private UUID	translatedSubtitleId;
 	@NotNull
 	@Enumerated(STRING)
 	private Status	status	= CREATED;

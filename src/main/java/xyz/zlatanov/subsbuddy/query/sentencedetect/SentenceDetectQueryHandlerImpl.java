@@ -1,6 +1,5 @@
 package xyz.zlatanov.subsbuddy.query.sentencedetect;
 
-import java.io.InputStream;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,9 +17,9 @@ public class SentenceDetectQueryHandlerImpl implements SentenceDetectQueryHandle
 
 	@SneakyThrows
 	public SentenceDetectQueryHandlerImpl() {
-		InputStream inputStream = getClass().getResourceAsStream("/language-models/opennlp-en.bin");
-        assert inputStream != null;
-        val model = new SentenceModel(inputStream);
+		val inputStream = getClass().getResourceAsStream("/language-models/opennlp-en.bin");
+		assert inputStream != null;
+		val model = new SentenceModel(inputStream);
 		sentenceDetector = new SentenceDetectorME(model);
 	}
 
@@ -30,7 +29,7 @@ public class SentenceDetectQueryHandlerImpl implements SentenceDetectQueryHandle
 		return new SentenceDetectProjection().sentenceList(List.of(sentenceDetector.sentDetect(spacePaddedText)));
 	}
 
-	public static String addSpacesAfterPunctuation(String input) {
+	private static String addSpacesAfterPunctuation(String input) {
 		return input.replaceAll("([.!?])([^\\s])", "$1 $2");
 	}
 }

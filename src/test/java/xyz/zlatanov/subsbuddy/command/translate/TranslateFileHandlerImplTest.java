@@ -11,9 +11,11 @@ import static xyz.zlatanov.subsbuddy.domain.Translation.Status.FAILED;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import lombok.val;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
@@ -39,7 +41,8 @@ class TranslateFileHandlerImplTest {
 	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(
 			movieSubtitleRepository, translationRepository, translateOrchestratorAsync);
 
-	String						fileId						= "test";
+	UUID						fileId						= UUID.randomUUID();
+	UUID						subtitleId					= UUID.randomUUID();
 	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
 	String						subtitleData				= """
 			1
@@ -55,24 +58,26 @@ class TranslateFileHandlerImplTest {
 
 	@Test
 	void execute_existingFile_translates() {
+		val subtitleId = UUID.randomUUID();
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
-		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
+		when(translationRepository.findBySourceSubtitleId(fileId)).thenReturn(List.of());
 		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED)).thenReturn(null);
 		when(parseLinesQueryHandler.execute(any())).thenReturn(new ParseLinesProjection());
 		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
 		when(assembleSubsQueryHandler.execute(any())).thenReturn(new AssembleSubsQueryProjection());
-		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id("saved"));
+		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id(subtitleId));
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));
 	}
 
 	@Test
 	void execute_alreadyTranslated_returns() {
+		val translatedId = UUID.randomUUID();
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
-		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
+		when(translationRepository.findBySourceSubtitleId(fileId)).thenReturn(List.of());
 		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED))
-				.thenReturn(new Translation().id("translated"));
-		when(translationRepository.findOneBySourceIdAndTranslationId("test", "translated")).thenReturn(null);
+				.thenReturn(new Translation().id(translatedId));
+		when(translationRepository.findOneBySourceSubtitleIdAndTranslatedSubtitleId(subtitleId, translatedId)).thenReturn(null);
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));
 	}
@@ -86,7 +91,7 @@ class TranslateFileHandlerImplTest {
 	@Test
 	void execute_alreadyTranslatedFile_throws() {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
-		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of(new Translation()));
+		when(translationRepository.findBySourceSubtitleId(fileId)).thenReturn(List.of(new Translation()));
 		assertThrows(TranslationException.class, () -> handler.execute(command));
 	}
 

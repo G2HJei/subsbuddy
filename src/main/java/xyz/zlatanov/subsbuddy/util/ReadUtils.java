@@ -1,12 +1,15 @@
 package xyz.zlatanov.subsbuddy.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
+import static lombok.AccessLevel.PRIVATE;
 
 import java.nio.charset.IllegalCharsetNameException;
 import java.util.regex.Pattern;
 
+import lombok.NoArgsConstructor;
 import lombok.val;
 
+@NoArgsConstructor(access = PRIVATE)
 public class ReadUtils {
 
 	private static final Pattern englishLetters = Pattern.compile("[a-zA-Z]");

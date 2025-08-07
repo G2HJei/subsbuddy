@@ -1,6 +1,6 @@
 package xyz.zlatanov.subsbuddy.query.download;
 
-import static java.nio.charset.StandardCharsets.UTF_8;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
@@ -15,7 +15,7 @@ public class DownloadFileQueryHandlerImpl implements DownloadFileQueryHandler {
 	private MovieSubtitleRepository repository;
 
 	@Override
-	public DownloadFileProjection execute(String id) {
+	public DownloadFileProjection execute(UUID id) {
 		return repository.findById(id)
 				.map(f -> new DownloadFileProjection()
 						.filename(f.filename())
