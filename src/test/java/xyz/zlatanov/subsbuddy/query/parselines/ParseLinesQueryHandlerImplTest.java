@@ -34,8 +34,8 @@ class ParseLinesQueryHandlerImplTest {
 
 	static Stream<Arguments> splitLinesArgs() {
 		return Stream.of(
-				Arguments.arguments(
-						// multiple lines
+				Arguments.argumentSet(
+						"Multiple lines",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
@@ -60,8 +60,8 @@ class ParseLinesQueryHandlerImplTest {
 										.end(LocalTime.of(0, 0, 41, 700000000))
 										.text("I feel it in the earth."))),
 
-				Arguments.arguments(
-						// remove metadata
+				Arguments.argumentSet(
+						"Remove metadata",
 						"""
 								Title: Lord of the Rings: The Fellowship of the Ring
 								Director: Peter Jackson
@@ -72,8 +72,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// no actual text
+				Arguments.argumentSet(
+						"No actual text",
 						"""
 								1
 								00:00:12,200 --> 00:00:15,100
@@ -85,8 +85,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// with inline ambience
+				Arguments.argumentSet(
+						"With inline ambience",
 						"""
 								1
 								00:00:12,200 --> 00:00:15,100
@@ -98,8 +98,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// with milliseconds
+				Arguments.argumentSet(
+						"With milliseconds",
 						"""
 								1
 								00:00:32.200 --> 00:00:35.100
@@ -107,8 +107,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// no milliseconds
+				Arguments.argumentSet(
+						"No milliseconds",
 						"""
 								1
 								00:00:32 --> 00:00:35
@@ -119,8 +119,8 @@ class ParseLinesQueryHandlerImplTest {
 								.end(LocalTime.of(0, 0, 35))
 								.text("The world is changed."))),
 
-				Arguments.arguments(
-						// multiline
+				Arguments.argumentSet(
+						"Multiline",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
@@ -132,8 +132,8 @@ class ParseLinesQueryHandlerImplTest {
 								.end(LocalTime.of(0, 0, 35, 100000000))
 								.text("The world is changed. I feel it in the water."))),
 
-				Arguments.arguments(
-						// new line
+				Arguments.argumentSet(
+						"New line",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
@@ -146,8 +146,8 @@ class ParseLinesQueryHandlerImplTest {
 								.end(LocalTime.of(0, 0, 35, 100000000))
 								.text("The world is changed. I feel it in the water."))),
 
-				Arguments.arguments(
-						// html tags
+				Arguments.argumentSet(
+						"HTML tags",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
@@ -155,8 +155,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// square bracket tags
+				Arguments.argumentSet(
+						"Square bracket tags",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
@@ -164,8 +164,8 @@ class ParseLinesQueryHandlerImplTest {
 								""",
 						List.of(THE_WORLD_IS_CHANGED)),
 
-				Arguments.arguments(
-						// square asterisk tags
+				Arguments.argumentSet(
+						"Asterisk tags",
 						"""
 								1
 								00:00:32,200 --> 00:00:35,100
