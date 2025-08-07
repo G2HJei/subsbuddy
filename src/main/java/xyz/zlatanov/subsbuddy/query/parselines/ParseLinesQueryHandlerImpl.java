@@ -18,8 +18,12 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 @Service
 public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 
-	public static final String	INFO_LINE	= "--Translated by 🐻 Subs Buddy--";
-	private final Pattern		timePattern	= Pattern.compile("([\\d:.,]+) --> ([\\d:.,]+)", Pattern.DOTALL);
+	public static final String			INFO_LINE	= "--Translated by 🐻 Subs Buddy--";
+	public static final SubtitleEntry	INFO_ENTRY	= new SubtitleEntry()
+			.start(LocalTime.of(0, 0, 0))
+			.end(LocalTime.of(0, 0, 10))
+			.text(INFO_LINE);
+	private final Pattern				timePattern	= Pattern.compile("([\\d:.,]+) --> ([\\d:.,]+)", Pattern.DOTALL);
 
 	@Override
 	public ParseLinesProjection execute(ParseLinesQuery query) {
@@ -37,10 +41,7 @@ public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 
 	private void addInfoLine(final List<SubtitleEntry> lineList) {
 		if (lineList.isEmpty() || lineList.getFirst().start().isAfter(LocalTime.of(0, 0, 10))) {
-			lineList.addFirst(new SubtitleEntry()
-					.start(LocalTime.of(0, 0, 0))
-					.end(LocalTime.of(0, 0, 10))
-					.text(INFO_LINE));
+			lineList.addFirst(INFO_ENTRY);
 		} else {
 			val first = lineList.getFirst();
 			lineList.addFirst(new SubtitleEntry()
