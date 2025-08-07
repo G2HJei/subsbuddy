@@ -13,12 +13,18 @@
     <div class="container">
         <div class="row">
             <div class="col-12 col-md-6 mx-auto">
-                <h2 class="d-flex justify-content-center gap-1 align-items-center">
-                    <a th:href="@{/}" class="text-decoration-none text-muted">
-                        <img src="" th:src="@{'/buddy.png'}" th:alt="buddy"/>
-                        <span>Subs Buddy</span>
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="d-flex justify-content-center gap-1 align-items-center mb-0">
+                        <a th:href="@{/}" class="text-decoration-none text-muted">
+                            <img src="" th:src="@{'/images/buddy.png'}" th:alt="buddy"/>
+                            <span>Subs Buddy</span>
+                        </a>
+                    </h2>
+                    <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip"
+                       data-bs-title="Logout">
+                        <i class="bi bi-box-arrow-right"></i>
                     </a>
-                </h2>
+                </div>
                 <p th:text="${message}" th:if="${message ne null}" class="alert alert-success"></p>
                 <p th:text="${error}" th:if="${error ne null}" class="alert alert-danger"></p>
             </div>
@@ -47,7 +53,8 @@
                     <tr th:each="sub : ${model}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
                         <td>
                             <a th:href="'/download?id='+${sub.id}">
-                                <img height="32px" class="highlight" src="" th:src="@{'/'+${sub.language}+'.png'}"
+                                <img height="32px" class="highlight" src=""
+                                     th:src="@{'/images/'+${sub.language}+'.png'}"
                                      th:alt="${sub.language}" data-bs-toggle="tooltip" data-bs-title="Download"/>
                             </a>
                         </td>
@@ -55,12 +62,12 @@
                             <a th:each="translation: ${sub.translations}" th:href="'/download?id='+${translation.id}">
                                 <img th:if="${translation.status eq 'COMPLETED'}"
                                      height="32px" src="" class="highlight"
-                                     th:src="@{'/'+${translation.language}+'.png'}"
+                                     th:src="@{'/images/'+${translation.language}+'.png'}"
                                      th:alt="${translation.language}" data-bs-toggle="tooltip"
                                      data-bs-title="Download"/>
                                 <img th:if="${translation.status ne 'COMPLETED'}"
                                      height="32px" src="" class="greyed-out"
-                                     th:src="@{'/'+${translation.language}+'.png'}"
+                                     th:src="@{'/images/'+${translation.language}+'.png'}"
                                      th:alt="${translation.language}" data-bs-toggle="tooltip"
                                      th:data-bs-title="${translation.status eq 'FAILED' ? 'An error occurred. Sorry.' : 'Translating... please check back later.'}"
                                      data-bs-title="Download"/>
@@ -84,8 +91,8 @@
         </div>
     </div>
     <script th:inline="javascript">
-		const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
-		const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
     </script>
 </section>
 </body>

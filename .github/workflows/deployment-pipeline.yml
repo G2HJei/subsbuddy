@@ -51,6 +51,7 @@ jobs:
           docker image prune -a -f; 
           docker pull ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}; 
           docker run -d -p 8080:8080 --name subs-buddy --add-host host.docker.internal:host-gateway \
+            -e AUTH_KEY=${{ vars.AUTH_KEY }} \
             -e DEEPL_API_KEY=${{ vars.DEEPL_API_KEY }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASS=${{ secrets.DB_PASS }} \
