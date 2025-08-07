@@ -12,12 +12,12 @@ import java.math.MathContext;
 import java.time.Duration;
 import java.util.*;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 import opennlp.tools.tokenize.WhitespaceTokenizer;
 import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
@@ -35,8 +35,8 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 	public TranslateTextProjection execute(TranslateTextQuery query) {
 		val projection = new TranslateTextProjection();
 		val translatedEntries = projection.linesList();
-		List<SubtitleEntry> selectionBuffer = new ArrayList<>();
-		List<List<SubtitleEntry>> selection = new ArrayList<>(List.of(selectionBuffer));
+		var selectionBuffer = new ArrayList<SubtitleEntry>();
+		val selection = new ArrayList<>(List.of(selectionBuffer));
 		for (SubtitleEntry entry : query.linesList()) {
 			if (selectionBuffer.isEmpty() || lineContinuation(selectionBuffer, entry)) {
 				selectionBuffer.add(entry);
