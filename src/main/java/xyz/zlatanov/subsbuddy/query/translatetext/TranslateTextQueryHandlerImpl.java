@@ -27,7 +27,7 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 @RequiredArgsConstructor
 public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler {
 
-	private final Duration				mergeLinesThreshold	= Duration.of(100, MILLIS);
+	public static final Duration		MERGE_LINES_THRESHOLD	= Duration.of(100, MILLIS);
 
 	private final TranslationConnector	translationConnector;
 
@@ -55,7 +55,7 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 		}
 		val last = selectionBuffer.getLast();
 		val nextChar = next.text().charAt(0);
-		return (Duration.between(last.end(), next.start()).compareTo(mergeLinesThreshold) <= 0)
+		return (Duration.between(last.end(), next.start()).compareTo(MERGE_LINES_THRESHOLD) <= 0)
 				&& !Arrays.asList('.', '?', "!").contains(last.text().charAt(last.text().length() - 1))
 				&& (isLowerCase(nextChar) || isDigit(nextChar));
 	}

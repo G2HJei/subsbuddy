@@ -1,33 +1,37 @@
 package xyz.zlatanov.subsbuddy.query.translatetext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
+import static xyz.zlatanov.subsbuddy.domain.Language.BG;
+import static xyz.zlatanov.subsbuddy.domain.Language.EN;
+import static xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandlerImpl.MERGE_LINES_THRESHOLD;
 
 import java.time.LocalTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import lombok.val;
-import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 class TranslateTextQueryHandlerImplTest {
 
-	TranslationConnector		translationConnector	= new CapitalizingTranslationConnector();
-	TranslateTextQueryHandler	handler					= new TranslateTextQueryHandlerImpl(translationConnector);
-
 	@ParameterizedTest
 	@MethodSource("subsEntriesArgs")
 	void shouldTranslate(List<SubtitleEntry> linesToTranslate, List<SubtitleEntry> expectedTranslatedLines) {
+		val handler = new TranslateTextQueryHandlerImpl(new CapitalizingTranslationConnector());
+
 		val translation = handler.execute(new TranslateTextQuery().linesList(linesToTranslate));
 		assertEquals(expectedTranslatedLines, translation.linesList());
 	}
 
-	public static Stream<Arguments> subsEntriesArgs() {
+	static Stream<Arguments> subsEntriesArgs() {
 		return Stream.of(
 				Arguments.argumentSet("Single sentence",
 						entries("0 -> 1 -> To be the man you've got to beat the man."),
@@ -77,7 +81,7 @@ class TranslateTextQueryHandlerImplTest {
 								"1 -> 2 -> TO PROVE THERE IS NO DNA.")));
 	}
 
-	private static List<SubtitleEntry> entries(String... entries) {
+	static List<SubtitleEntry> entries(String... entries) {
 		return Arrays.stream(entries)
 				.map(entry -> entry.split(" -> ", 3))
 				.map(parts -> new SubtitleEntry()
@@ -85,5 +89,24 @@ class TranslateTextQueryHandlerImplTest {
 						.end(LocalTime.of(0, 0, Integer.parseInt(parts[1].trim())))
 						.text(parts[2]))
 				.toList();
+	}
+
+	@Test
+	void shouldTranslateTwoLineSentenceAsOne() {
+		val translationConnector = spy(new CapitalizingTranslationConnector());
+		val handler = new TranslateTextQueryHandlerImpl(translationConnector);
+
+		handler.execute(new TranslateTextQuery().linesList(
+				List.of(
+						new SubtitleEntry()
+								.start(LocalTime.of(0, 0, 0))
+								.end(LocalTime.of(0, 0, 1))
+								.text("To be the man you've"),
+						new SubtitleEntry()
+								.start(LocalTime.of(0, 0, 1).plus(MERGE_LINES_THRESHOLD))
+								.end(LocalTime.of(0, 0, 2))
+								.text("got to beat the man."))));
+
+		verify(translationConnector).translate("To be the man you've got to beat the man.", EN, BG);
 	}
 }
