@@ -34,8 +34,11 @@ public class DeepLTranslationConnector implements TranslationConnector {
 	@SneakyThrows
 	public String translate(String text, Language from, Language to, String context) {
 		val options = new TextTranslationOptions().setContext(context);
+		log.debug("Translating: {}", text);
 		val translation = client.translateText(text, from.name().toLowerCase(), to.name().toLowerCase(), options);
-		return translation.getText();
+		val translatedText = translation.getText();
+		log.debug("          -> {}", translatedText);
+		return translatedText;
 	}
 
 	@SneakyThrows

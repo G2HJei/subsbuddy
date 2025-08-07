@@ -5,7 +5,7 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
-import static xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandlerImpl.MERGE_LINES_THRESHOLD;
+import static xyz.zlatanov.subsbuddy.query.translatetext.helper.EntriesGrouper.MERGE_LINES_THRESHOLD;
 
 import java.time.LocalTime;
 import java.util.Arrays;
@@ -107,6 +107,6 @@ class TranslateTextQueryHandlerImplTest {
 								.end(LocalTime.of(0, 0, 2))
 								.text("got to beat the man."))));
 
-		verify(translationConnector).translate("To be the man you've got to beat the man.", EN, BG);
+		verify(translationConnector).translate("To be the man you've got to beat the man.", EN, BG, "");
 	}
 }
