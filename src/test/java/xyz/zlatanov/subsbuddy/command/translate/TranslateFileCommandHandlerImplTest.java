@@ -3,7 +3,7 @@ package xyz.zlatanov.subsbuddy.command.translate;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
@@ -14,43 +14,39 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import lombok.val;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.exception.TranslationException;
-import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryHandler;
-import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryProjection;
-import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesProjection;
-import xyz.zlatanov.subsbuddy.query.parselines.ParseLinesQueryHandler;
-import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextProjection;
-import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandler;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
-class TranslateFileHandlerImplTest {
+@ExtendWith(MockitoExtension.class)
+class TranslateFileCommandHandlerImplTest {
 
-	MovieSubtitleRepository		movieSubtitleRepository		= mock(MovieSubtitleRepository.class);
-	TranslationRepository		translationRepository		= mock(TranslationRepository.class);
-	ParseLinesQueryHandler		parseLinesQueryHandler		= mock(ParseLinesQueryHandler.class);
-	TranslateTextQueryHandler	translateTextQueryHandler	= mock(TranslateTextQueryHandler.class);
-	AssembleSubsQueryHandler	assembleSubsQueryHandler	= mock(AssembleSubsQueryHandler.class);
+	@Mock
+	MovieSubtitleRepository			movieSubtitleRepository;
+	@Mock
+	TranslationRepository			translationRepository;
+	@Mock
+	TranslateOrchestratorAsync		translateOrchestratorAsync;
+	@InjectMocks
+	TranslateFileCommandHandlerImpl	handler;
 
-	TranslateOrchestratorAsync	translateOrchestratorAsync	= new TranslateOrchestratorAsync(
-			movieSubtitleRepository, translationRepository, parseLinesQueryHandler, translateTextQueryHandler, assembleSubsQueryHandler);
-	TranslateFileCommandHandler	handler						= new TranslateFileCommandHandlerImpl(
-			movieSubtitleRepository, translationRepository, translateOrchestratorAsync);
-
-	UUID						fileId						= UUID.randomUUID();
-	UUID						subtitleId					= UUID.randomUUID();
-	TranslateFileCommand		command						= new TranslateFileCommand().id(fileId);
-	String						subtitleData				= """
+	UUID							fileId			= UUID.randomUUID();
+	TranslateFileCommand			command			= new TranslateFileCommand().id(fileId);
+	String							subtitleData	= """
 			1
 			00:01:07,818 --> 00:01:11,572
 			It all began with the forging\s
 			of the Great Rings...
 			""";
-	MovieSubtitle				lotrEn						= new MovieSubtitle()
+	MovieSubtitle					lotrEn			= new MovieSubtitle()
 			.id(fileId)
 			.filename("test.srt")
 			.language(EN)
@@ -58,16 +54,15 @@ class TranslateFileHandlerImplTest {
 
 	@Test
 	void execute_existingFile_translates() {
-		val subtitleId = UUID.randomUUID();
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceSubtitleId(fileId)).thenReturn(List.of());
 		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED)).thenReturn(null);
-		when(parseLinesQueryHandler.execute(any())).thenReturn(new ParseLinesProjection());
-		when(translateTextQueryHandler.execute(any())).thenReturn(new TranslateTextProjection());
-		when(assembleSubsQueryHandler.execute(any())).thenReturn(new AssembleSubsQueryProjection());
-		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle().id(subtitleId));
-		when(translationRepository.save(any())).thenReturn(new Translation());
-		assertDoesNotThrow(() -> handler.execute(command));
+		val translation = new Translation();
+		when(translationRepository.save(any())).thenReturn(translation);
+
+		handler.execute(command);
+
+		verify(translateOrchestratorAsync).orchestrateTranslation(lotrEn, translation);
 	}
 
 	@Test
@@ -77,7 +72,6 @@ class TranslateFileHandlerImplTest {
 		when(translationRepository.findBySourceSubtitleId(fileId)).thenReturn(List.of());
 		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED))
 				.thenReturn(new Translation().id(translatedId));
-		when(translationRepository.findOneBySourceSubtitleIdAndTranslatedSubtitleId(subtitleId, translatedId)).thenReturn(null);
 		when(translationRepository.save(any())).thenReturn(new Translation());
 		assertDoesNotThrow(() -> handler.execute(command));
 	}

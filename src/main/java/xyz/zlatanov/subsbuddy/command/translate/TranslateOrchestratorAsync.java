@@ -37,22 +37,26 @@ public class TranslateOrchestratorAsync {
 	@Transactional
 	protected void orchestrateTranslation(MovieSubtitle sourceSub, Translation translation) {
 		try {
-			translation.status(IN_PROGRESS);
-			val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery()
-					.addSubsBuddyInfo(true)
-					.subtitleData(sourceSub.subtitleData()));
-			val translatedSubsLines = translateTextQueryHandler.execute(new TranslateTextQuery().linesList(parsedLines.lineList()));
-			val subsContentFormatted = assembleSubsQueryHandler
-					.execute(new AssembleSubsQuery().linesList(translatedSubsLines.linesList()));
-			val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
-					.filename(sourceSub.filename())
-					.language(BG)
-					.subtitleData(subsContentFormatted.content()));
-			translation.translatedSubtitleId(translatedSub.id()).status(COMPLETED);
+			doTranslation(sourceSub, translation);
 		} catch (Exception e) {
 			log.error(ExceptionUtils.getStackTrace(e));
 			translation.status(FAILED);
 		}
 		translationRepository.save(translation);
+	}
+
+	private void doTranslation(MovieSubtitle sourceSub, Translation translation) {
+		translation.status(IN_PROGRESS);
+		val parsedLines = parseLinesQueryHandler.execute(new ParseLinesQuery()
+				.addSubsBuddyInfo(true)
+				.subtitleData(sourceSub.subtitleData()));
+		val translatedSubsLines = translateTextQueryHandler.execute(new TranslateTextQuery().linesList(parsedLines.lineList()));
+		val subsContentFormatted = assembleSubsQueryHandler
+				.execute(new AssembleSubsQuery().linesList(translatedSubsLines.linesList()));
+		val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
+				.filename(sourceSub.filename())
+				.language(BG)
+				.subtitleData(subsContentFormatted.content()));
+		translation.translatedSubtitleId(translatedSub.id()).status(COMPLETED);
 	}
 }

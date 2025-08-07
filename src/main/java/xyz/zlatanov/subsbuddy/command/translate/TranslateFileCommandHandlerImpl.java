@@ -4,6 +4,8 @@ import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.CREATED;
 import static xyz.zlatanov.subsbuddy.domain.Translation.Status.FAILED;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +28,22 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 	@Override
 	@Transactional
 	public void execute(TranslateFileCommand command) {
-		val sourceSub = movieSubtitleRepository.findById(command.id()).orElseThrow(TranslationException::new);
+		val sourceSub = getSourceSub(command.id());
 		validateSourceSub(sourceSub);
-		val existingTranslation = translationRepository.findOneBySourceHashCodeAndStatusNot(sourceSub.subtitleData().hashCode(), FAILED);
+		val existingTranslation = findExistingTranslation(sourceSub);
 		if (existingTranslation == null) {
 			initiateTranslation(command, sourceSub);
 		} else {
 			linkTranslation(sourceSub, existingTranslation);
 		}
+	}
+
+	private Translation findExistingTranslation(MovieSubtitle sourceSub) {
+		return translationRepository.findOneBySourceHashCodeAndStatusNot(sourceSub.subtitleData().hashCode(), FAILED);
+	}
+
+	private MovieSubtitle getSourceSub(UUID subId) {
+		return movieSubtitleRepository.findById(subId).orElseThrow(TranslationException::new);
 	}
 
 	private void validateSourceSub(MovieSubtitle sourceSub) {
