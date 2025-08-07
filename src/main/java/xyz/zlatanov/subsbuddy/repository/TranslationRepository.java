@@ -14,7 +14,7 @@ public interface TranslationRepository extends JpaRepository<Translation, String
 
 	List<Translation> findBySourceId(String sourceId);
 
-	Translation findOneBySourceIdAndTranslatedId(String sourceId, String translationId);
+	Translation findOneBySourceIdAndTranslationId(String sourceId, String translationId);
 
 	void deleteAllBySourceId(String sourceId);
 

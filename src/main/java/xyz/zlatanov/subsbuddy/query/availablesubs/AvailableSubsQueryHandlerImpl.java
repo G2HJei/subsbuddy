@@ -2,32 +2,26 @@ package xyz.zlatanov.subsbuddy.query.availablesubs;
 
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 
-import lombok.val;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import lombok.val;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
 @Service
 public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler {
 
-	private final boolean					enableOwnerFiltering;
 	private final MovieSubtitleRepository	subtitleRepository;
 	private final TranslationRepository		translationRepository;
 
-	public AvailableSubsQueryHandlerImpl(@Value("${ENABLE_OWNER_FILTERING:false}") boolean enableOwnerFiltering,
-			MovieSubtitleRepository subtitleRepository, TranslationRepository translationRepository) {
-		this.enableOwnerFiltering = enableOwnerFiltering;
+	public AvailableSubsQueryHandlerImpl(MovieSubtitleRepository subtitleRepository, TranslationRepository translationRepository) {
 		this.subtitleRepository = subtitleRepository;
 		this.translationRepository = translationRepository;
 	}
 
 	@Override
 	public AvailableSubsProjection execute(AvailableSubsQuery query) {
-		val subtitles = enableOwnerFiltering
-				? subtitleRepository.findByOwner(query.owner())
-				: subtitleRepository.findByOwnerNotNull();
+		val subtitles = subtitleRepository.findAll();
 		return new AvailableSubsProjection(
 				subtitles.stream()
 						.map(m -> new SubDetails()
@@ -36,7 +30,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 								.language(m.language())
 								.translations(translationRepository.findBySourceId(m.id()).stream()
 										.map(t -> new TranslationDetails()
-												.id(t.translatedId())
+												.id(t.translationId())
 												.language(BG)
 												.status(t.status()))
 										.toList()))

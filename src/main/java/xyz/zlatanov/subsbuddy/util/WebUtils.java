@@ -1,21 +1,17 @@
 package xyz.zlatanov.subsbuddy.util;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
-
-import java.util.Optional;
+import static lombok.AccessLevel.PRIVATE;
 
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import org.springframework.web.util.UriUtils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.NoArgsConstructor;
 import lombok.val;
 
+@NoArgsConstructor(access = PRIVATE)
 public class WebUtils {
-
-	public static String getOwner(HttpServletRequest request) {
-		return Optional.ofNullable(request.getHeader("x-forwarded-for"))
-				.orElseGet(request::getRemoteAddr);
-	}
 
 	public static String getErrorQueryParamRedirect(HttpServletRequest request, String key, String msg) {
 		val msgEncoded = UriUtils.encodeQueryParam(msg, UTF_8);

@@ -49,7 +49,6 @@ class TranslateFileHandlerImplTest {
 			""";
 	MovieSubtitle				lotrEn						= new MovieSubtitle()
 			.id(fileId)
-			.owner(fileId)
 			.filename("test.srt")
 			.language(EN)
 			.subtitleData(subtitleData);
@@ -68,13 +67,14 @@ class TranslateFileHandlerImplTest {
 	}
 
 	@Test
-	void execute_alreadyTranslated_returns(){
+	void execute_alreadyTranslated_returns() {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
 		when(translationRepository.findBySourceId(fileId)).thenReturn(List.of());
-		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED)).thenReturn(new Translation().id("translated"));
-		when(translationRepository.findOneBySourceIdAndTranslatedId("test", "translated")).thenReturn(null);
+		when(translationRepository.findOneBySourceHashCodeAndStatusNot(subtitleData.hashCode(), FAILED))
+				.thenReturn(new Translation().id("translated"));
+		when(translationRepository.findOneBySourceIdAndTranslationId("test", "translated")).thenReturn(null);
 		when(translationRepository.save(any())).thenReturn(new Translation());
-		assertDoesNotThrow(()->handler.execute(command));
+		assertDoesNotThrow(() -> handler.execute(command));
 	}
 
 	@Test
@@ -91,7 +91,7 @@ class TranslateFileHandlerImplTest {
 	}
 
 	@Test
-	void execute_nonEnglish_throws(){
+	void execute_nonEnglish_throws() {
 		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(new MovieSubtitle().id(fileId).language(BG)));
 		assertThrows(TranslationException.class, () -> handler.execute(command));
 	}

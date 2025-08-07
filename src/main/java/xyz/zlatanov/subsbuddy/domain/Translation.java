@@ -22,7 +22,7 @@ public class Translation {
 	private String	id;
 	private String	sourceId;
 	private int		sourceHashCode;
-	private String	translatedId;
+	private String	translationId;
 	@NotNull
 	@Enumerated(STRING)
 	private Status	status	= CREATED;

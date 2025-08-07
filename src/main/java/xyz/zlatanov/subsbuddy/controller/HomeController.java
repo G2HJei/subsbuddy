@@ -30,10 +30,10 @@ public class HomeController {
 	private HomeService service;
 
 	@GetMapping
-	public String home(HttpServletRequest request, Model model,
+	public String home(Model model,
 			@RequestParam(value = "error", defaultValue = "#{null}") String error,
 			@RequestParam(value = "message", defaultValue = "#{null}") String message) {
-		model.addAttribute("model", service.getModel(WebUtils.getOwner(request)));
+		model.addAttribute("model", service.getModel());
 		model.addAttribute("error", error);
 		model.addAttribute("message", message);
 		return "home";
@@ -42,7 +42,7 @@ public class HomeController {
 	@SneakyThrows
 	@PostMapping
 	public String upload(HttpServletRequest request, @RequestParam("srt") MultipartFile file) {
-		service.upload(Objects.requireNonNull(file.getOriginalFilename()), file.getBytes(), WebUtils.getOwner(request));
+		service.upload(Objects.requireNonNull(file.getOriginalFilename()), file.getBytes());
 		return WebUtils.getErrorQueryParamRedirect(request, "message", "Uploaded: " + file.getOriginalFilename());
 	}
 

@@ -9,5 +9,4 @@ public class UploadFileCommand {
 
 	private String	filename;
 	private String	content;
-	private String	owner;
 }

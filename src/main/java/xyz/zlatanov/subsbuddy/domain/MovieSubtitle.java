@@ -1,12 +1,11 @@
 package xyz.zlatanov.subsbuddy.domain;
 
-import jakarta.persistence.*;
-
-import lombok.Data;
-import lombok.experimental.Accessors;
-
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
+
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @Accessors(fluent = true)
@@ -21,5 +20,4 @@ public class MovieSubtitle {
 	private Language	language;
 	@Column(columnDefinition = "TEXT")
 	private String		subtitleData;
-	private String		owner;
 }

@@ -30,8 +30,7 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 		val sub = movieSubtitleRepository.save(new MovieSubtitle()
 				.filename(file.filename())
 				.language(EN)
-				.subtitleData(file.content())
-				.owner(file.owner()));
+				.subtitleData(file.content()));
 		translateFileCommandHandler.execute(new TranslateFileCommand().id(sub.id()));
 	}
 
@@ -39,7 +38,7 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 		if (!file.filename().endsWith(".srt")) {
 			throw new NotSupportedFileTypeException();
 		}
-		if (movieSubtitleRepository.findOneByOwnerAndFilename(file.owner(), file.filename()) != null) {
+		if (movieSubtitleRepository.findOneByFilename(file.filename()) != null) {
 			throw new AlreadyUploadedException();
 		}
 		if (!ReadUtils.hasEnglishCharacters(file.content(), 0.2)) {

@@ -48,7 +48,7 @@ public class TranslateOrchestratorAsync {
 					.filename(sourceSub.filename())
 					.language(BG)
 					.subtitleData(subsContentFormatted.content()));
-			translation.translatedId(translatedSub.id()).status(COMPLETED);
+			translation.translationId(translatedSub.id()).status(COMPLETED);
 		} catch (Exception e) {
 			log.error(ExceptionUtils.getStackTrace(e));
 			translation.status(FAILED);

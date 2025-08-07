@@ -16,9 +16,9 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
 public class FileUploadHandlerImplTest {
 
-	MovieSubtitleRepository	movieSubtitleRepository	= mock(MovieSubtitleRepository.class);
-	TranslateFileCommandHandler translateFileHandler	= mock(TranslateFileCommandHandler.class);
-	UploadFileCommandHandler handler					= new UploadFileCommandHandlerImpl(movieSubtitleRepository, translateFileHandler);
+	MovieSubtitleRepository		movieSubtitleRepository	= mock(MovieSubtitleRepository.class);
+	TranslateFileCommandHandler	translateFileHandler	= mock(TranslateFileCommandHandler.class);
+	UploadFileCommandHandler	handler					= new UploadFileCommandHandlerImpl(movieSubtitleRepository, translateFileHandler);
 
 	@BeforeEach
 	void setup() {
@@ -37,8 +37,9 @@ public class FileUploadHandlerImplTest {
 	}
 
 	@Test
-	void execute_alreadyUploaded_throws(){
-		when(movieSubtitleRepository.findOneByOwnerAndFilename("me", "alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
-		assertThrows(AlreadyUploadedException.class, () -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt").owner("me")));
+	void execute_alreadyUploaded_throws() {
+		when(movieSubtitleRepository.findOneByFilename("alreadyUploaded.srt")).thenReturn(new MovieSubtitle());
+		assertThrows(AlreadyUploadedException.class,
+				() -> handler.execute(new UploadFileCommand().filename("alreadyUploaded.srt")));
 	}
 }

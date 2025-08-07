@@ -51,8 +51,6 @@ jobs:
           docker image prune -a -f; 
           docker pull ${{ secrets.DOCKER_USERNAME }}/subs-buddy:${{ env.BUILD_NUMBER }}; 
           docker run -d -p 8080:8080 --name subs-buddy --add-host host.docker.internal:host-gateway \
-            -e ENABLE_OWNER_FILTERING=true \
-            -e GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID=${{ secrets.GOOGLE_MACROS_TRANSLATE_DEPLOYMENT_ID }} \
             -e DEEPL_API_KEY=${{ vars.DEEPL_API_KEY }} \
             -e DB_USER=${{ secrets.DB_USER }} \
             -e DB_PASS=${{ secrets.DB_PASS }} \

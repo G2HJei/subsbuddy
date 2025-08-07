@@ -30,8 +30,8 @@ public class HomeService {
 	private DownloadFileQueryHandler	downloadFileQueryHandler;
 	private DeleteFileCommandHandler	deleteFileCommandHandler;
 
-	public List<SubtitleModel> getModel(String owner) {
-		return availableSubsQueryHandler.execute(new AvailableSubsQuery().owner(owner))
+	public List<SubtitleModel> getModel() {
+		return availableSubsQueryHandler.execute(new AvailableSubsQuery())
 				.result().stream()
 				.map(d -> new SubtitleModel()
 						.id(d.id())
@@ -46,14 +46,13 @@ public class HomeService {
 				.toList();
 	}
 
-	public void upload(String fileName, byte[] bytes, String owner) {
+	public void upload(String fileName, byte[] bytes) {
 		if (!fileName.endsWith(".srt")) {
 			throw new NotSupportedFileTypeException();
 		}
 		uploadFileCommandHandler.execute(new UploadFileCommand()
 				.filename(fileName)
-				.content(ReadUtils.readUtf8Bytes(bytes))
-				.owner(owner));
+				.content(ReadUtils.readUtf8Bytes(bytes)));
 	}
 
 	public DownloadModel download(String id) {

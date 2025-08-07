@@ -57,6 +57,6 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 		translationRepository.save(new Translation()
 				.sourceId(sourceSub.id())
 				.sourceHashCode(sourceSub.subtitleData().hashCode())
-				.translatedId(existingTranslation.translatedId()));
+				.translationId(existingTranslation.translationId()));
 	}
 }
