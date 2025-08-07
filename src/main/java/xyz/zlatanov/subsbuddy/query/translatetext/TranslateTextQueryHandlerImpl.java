@@ -2,25 +2,21 @@ package xyz.zlatanov.subsbuddy.query.translatetext;
 
 import static java.lang.Character.isDigit;
 import static java.lang.Character.isLowerCase;
-import static java.math.RoundingMode.*;
 import static java.time.temporal.ChronoUnit.MILLIS;
-import static xyz.zlatanov.subsbuddy.domain.Language.BG;
-import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.time.Duration;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import org.apache.commons.text.StringEscapeUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import opennlp.tools.tokenize.WhitespaceTokenizer;
 import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
+import xyz.zlatanov.subsbuddy.query.translatetext.helper.TranslationHelper;
 
 @Slf4j
 @Service
@@ -33,20 +29,30 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 
 	@Override
 	public TranslateTextProjection execute(TranslateTextQuery query) {
-		val projection = new TranslateTextProjection();
-		val translatedEntries = projection.linesList();
+		val selection = groupEntriesIntoSelections(query.linesList());
+		val translatedLines = new TranslationHelper(translationConnector).translate(selection);
+		return new TranslateTextProjection()
+				.linesList(translatedLines);
+	}
+
+	private List<List<SubtitleEntry>> groupEntriesIntoSelections(List<SubtitleEntry> entries) {
 		var selectionBuffer = new ArrayList<SubtitleEntry>();
-		val selection = new ArrayList<>(List.of(selectionBuffer));
-		for (val entry : query.linesList()) {
-			if (selectionBuffer.isEmpty() || lineContinuation(selectionBuffer, entry)) {
-				selectionBuffer.add(entry);
-			} else {
-				selectionBuffer = new ArrayList<>(List.of(entry));
-				selection.add(selectionBuffer);
-			}
+		val selection = new ArrayList<List<SubtitleEntry>>(List.of(selectionBuffer));
+		for (val entry : entries) {
+			selectionBuffer = processEntry(entry, selectionBuffer, selection);
 		}
-		selection.forEach(s -> translate(s, translatedEntries));
-		return projection;
+		return selection;
+	}
+
+	private ArrayList<SubtitleEntry> processEntry(SubtitleEntry entry, ArrayList<SubtitleEntry> selectionBuffer,
+			ArrayList<List<SubtitleEntry>> selection) {
+		if (selectionBuffer.isEmpty() || lineContinuation(selectionBuffer, entry)) {
+			selectionBuffer.add(entry);
+			return selectionBuffer;
+		}
+		val newBuffer = new ArrayList<>(List.of(entry));
+		selection.add(newBuffer);
+		return newBuffer;
 	}
 
 	private boolean lineContinuation(List<SubtitleEntry> selectionBuffer, SubtitleEntry next) {
@@ -55,72 +61,10 @@ public class TranslateTextQueryHandlerImpl implements TranslateTextQueryHandler 
 		}
 		val last = selectionBuffer.getLast();
 		val nextChar = next.text().charAt(0);
-		return (Duration.between(last.end(), next.start()).compareTo(MERGE_LINES_THRESHOLD) <= 0)
-				&& !Arrays.asList('.', '?', "!").contains(last.text().charAt(last.text().length() - 1))
+		val lastChar = last.text().charAt(last.text().length() - 1);
+		return Duration.between(last.end(), next.start()).compareTo(MERGE_LINES_THRESHOLD) <= 0
+				&& !Arrays.asList('.', '?', '!').contains(lastChar)
 				&& (isLowerCase(nextChar) || isDigit(nextChar));
 	}
 
-	private void translate(List<SubtitleEntry> selectionBuffer, List<SubtitleEntry> translatedEntries) {
-		val text = String.join(" ", selectionBuffer.stream().map(SubtitleEntry::text).toList());
-		log.debug("Translating {}", text);
-		val translatedText = translationConnector.translate(text, EN, BG);
-		log.debug("         -> {}", translatedText);
-		val unescapedTranslatedText = StringEscapeUtils.unescapeHtml4(translatedText);
-		translatedEntries.addAll(constructEntries(selectionBuffer, unescapedTranslatedText));
-	}
-
-	private List<SubtitleEntry> constructEntries(List<SubtitleEntry> sourceEntries, String translatedText) {
-		val entryWeightList = getEntryWeightList(sourceEntries);
-		val weightedTextList = toWeightedText(translatedText, entryWeightList);
-		val translatedEntries = new ArrayList<SubtitleEntry>(sourceEntries.size());
-		for (int i = 0; i < sourceEntries.size() && i < weightedTextList.size(); i++) {
-			val sourceEntry = sourceEntries.get(i);
-			translatedEntries.add(new SubtitleEntry()
-					.start(sourceEntry.start())
-					.end(sourceEntry.end())
-					.text(weightedTextList.get(i)));
-		}
-		return translatedEntries;
-	}
-
-	private List<BigDecimal> getEntryWeightList(List<SubtitleEntry> sourceEntries) {
-		val totalLength = sourceEntries.stream()
-				.map(SubtitleEntry::text)
-				.map(String::length)
-				.reduce(0, Integer::sum);
-		return sourceEntries.stream()
-				.map(e -> percent(e.text().length(), totalLength))
-				.toList();
-	}
-
-	public static BigDecimal percent(int base, int total) {
-		return BigDecimal.valueOf(base)
-				.divide(BigDecimal.valueOf(total), 4, HALF_UP)
-				.multiply(BigDecimal.valueOf(100), new MathContext(4, HALF_UP))
-				.setScale(0, DOWN);
-	}
-
-	private List<String> toWeightedText(String translatedText, List<BigDecimal> entryWeightList) {
-		final Queue<String> tokens = new LinkedList<>(List.of(WhitespaceTokenizer.INSTANCE.tokenize(translatedText)));
-		val targetLengthList = entryWeightList.stream()
-				.map(w -> BigDecimal.valueOf(translatedText.length())
-						.multiply(w)
-						.divide(BigDecimal.valueOf(100), HALF_DOWN)
-						.intValue())
-				.toList();
-		return targetLengthList.stream()
-				.map(targetLength -> {
-					val currentLine = new StringBuilder();
-					while (!tokens.isEmpty()
-							&& currentLine.length() <= targetLength) {
-						currentLine.append(tokens.poll()).append(" ");
-					}
-					return currentLine.isEmpty() ? null
-							: currentLine
-									.deleteCharAt(currentLine.length() - 1)
-									.toString();
-				})
-				.filter(Objects::nonNull)
-				.toList();
-	}
 }
