@@ -36,21 +36,25 @@
                         <input id="srtSelect" type="file" name="srt" accept=".srt" class="form-control-file">
                     </div>
                 </div>
-                <div class="col-12 col-md-2 mt-2 mt-md-0 d-flex justify-content-end align-items-center me-auto">
-                    <button id="btnUpload" type="submit" class="btn btn-primary mt-2">Upload</button>
+                <div class="col-12 col-md-2 mt-md-0 d-flex justify-content-end align-items-center me-auto">
+                    <button id="btnUpload" type="submit" class="btn btn-primary">Upload</button>
                 </div>
             </div>
         </form>
-        <div class="row mt-2" th:if="${model.isEmpty()}">
+        <span class="d-flex justify-content-center align-items-center gap-2 fs-6 text-muted fw-lighter fst-italic mt-2"
+              th:text="${'Translation quota: ' + model.quota + '%'}">
+            Translation quota reached: %
+        </span>
+        <div class="row mt-2" th:if="${model.subtitleList.isEmpty()}">
             <div class="col-12 col-md-6 mx-auto">
                 Translated subs will appear here...
             </div>
         </div>
-        <div class="row mt-2" th:if="${not model.isEmpty()}">
+        <div class="row mt-2" th:if="${not model.subtitleList.isEmpty()}">
             <div class="col-12 col-md-6 mx-auto">
                 <table class="table table-hover table-borderless text-break align-middle mt-2 w-100">
                     <tbody>
-                    <tr th:each="sub : ${model}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
+                    <tr th:each="sub : ${model.subtitleList}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
                         <td>
                             <a th:href="'/download?id='+${sub.id}">
                                 <img height="32px" class="highlight" src=""

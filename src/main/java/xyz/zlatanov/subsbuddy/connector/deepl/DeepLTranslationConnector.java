@@ -30,8 +30,9 @@ public class DeepLTranslationConnector implements TranslationConnector {
 		usagePercent();
 	}
 
+	@Override
 	@SneakyThrows
-	private long usagePercent() {
+	public long usagePercent() {
 		val charUsage = client.getUsage().getCharacter();
 		assert charUsage != null;
 		val percentUsed = (charUsage.getCount() * 100) / charUsage.getLimit();

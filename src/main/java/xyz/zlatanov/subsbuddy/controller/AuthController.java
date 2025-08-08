@@ -20,20 +20,16 @@ public class AuthController {
 	private static final String	AUTH_SESSION_KEY	= "authenticated";
 
 	@GetMapping("/login")
-	public String loginPage(Model model,
-			@RequestParam(value = "error", defaultValue = "#{null}") String error,
-			HttpSession session) {
-		// If already authenticated, redirect to home
-		if (Boolean.TRUE.equals(session.getAttribute(AUTH_SESSION_KEY))) {
+	public String loginPage(Model model, HttpSession session, @RequestParam(value = "error", defaultValue = "#{null}") String error) {
+		if (alreadyAuthenticated(session)) {
 			return "redirect:/";
 		}
-
 		model.addAttribute("error", error);
 		return "login";
 	}
 
 	@PostMapping("/login")
-	public String authenticate(@RequestParam("authKey") String providedKey, HttpSession session) {
+	public String authenticate(HttpSession session, @RequestParam("authKey") String providedKey) {
 		if (authKey.equals(providedKey)) {
 			session.setAttribute(AUTH_SESSION_KEY, true);
 			return "redirect:/";
@@ -47,5 +43,9 @@ public class AuthController {
 		session.invalidate();
 		log.info("User logged out");
 		return "redirect:/login";
+	}
+
+	private static boolean alreadyAuthenticated(HttpSession session) {
+		return Boolean.TRUE.equals(session.getAttribute(AUTH_SESSION_KEY));
 	}
 }

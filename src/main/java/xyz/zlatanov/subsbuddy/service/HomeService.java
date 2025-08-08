@@ -2,7 +2,6 @@ package xyz.zlatanov.subsbuddy.service;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -14,8 +13,10 @@ import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommand;
 import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommandHandler;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommand;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommandHandler;
+import xyz.zlatanov.subsbuddy.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.model.DownloadModel;
+import xyz.zlatanov.subsbuddy.model.HomeModel;
 import xyz.zlatanov.subsbuddy.model.SubtitleModel;
 import xyz.zlatanov.subsbuddy.model.TranslationModel;
 import xyz.zlatanov.subsbuddy.query.availablesubs.AvailableSubsQuery;
@@ -31,9 +32,11 @@ public class HomeService {
 	private UploadFileCommandHandler	uploadFileCommandHandler;
 	private DownloadFileQueryHandler	downloadFileQueryHandler;
 	private DeleteFileCommandHandler	deleteFileCommandHandler;
+	private TranslationConnector		translationConnector;
 
-	public List<SubtitleModel> getModel() {
-		return availableSubsQueryHandler.execute(new AvailableSubsQuery())
+	public HomeModel getModel() {
+		val quota = translationConnector.usagePercent();
+		val subsList = availableSubsQueryHandler.execute(new AvailableSubsQuery())
 				.result().stream()
 				.map(d -> new SubtitleModel()
 						.id(d.id().toString())
@@ -46,6 +49,9 @@ public class HomeService {
 										.status(t.status().name()))
 								.toList()))
 				.toList();
+		return new HomeModel()
+				.quota(quota)
+				.subtitleList(subsList);
 	}
 
 	public void upload(String fileName, byte[] bytes) {
