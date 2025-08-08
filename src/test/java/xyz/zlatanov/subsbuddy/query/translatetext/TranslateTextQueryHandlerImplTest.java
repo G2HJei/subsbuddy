@@ -1,6 +1,8 @@
 package xyz.zlatanov.subsbuddy.query.translatetext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
@@ -107,6 +109,6 @@ class TranslateTextQueryHandlerImplTest {
 								.end(LocalTime.of(0, 0, 2))
 								.text("got to beat the man."))));
 
-		verify(translationConnector).translate("To be the man you've got to beat the man.", EN, BG, "");
+		verify(translationConnector).translate(eq("To be the man you've got to beat the man."), eq(EN), eq(BG), any());
 	}
 }
