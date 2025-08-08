@@ -1,5 +1,7 @@
 package xyz.zlatanov.subsbuddy.controller;
 
+import static xyz.zlatanov.subsbuddy.controller.ErrorHandlerController.ERROR_QUERY_KEY;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,7 +22,8 @@ public class AuthController {
 	private static final String	AUTH_SESSION_KEY	= "authenticated";
 
 	@GetMapping("/login")
-	public String loginPage(Model model, HttpSession session, @RequestParam(value = "error", defaultValue = "#{null}") String error) {
+	public String loginPage(Model model, HttpSession session,
+			@RequestParam(value = ERROR_QUERY_KEY, defaultValue = "#{null}") String error) {
 		if (alreadyAuthenticated(session)) {
 			return "redirect:/";
 		}

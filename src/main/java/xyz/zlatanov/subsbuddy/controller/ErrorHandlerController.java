@@ -11,18 +11,20 @@ import xyz.zlatanov.subsbuddy.util.WebUtils;
 @ControllerAdvice
 public class ErrorHandlerController {
 
+	public static final String ERROR_QUERY_KEY = "error";
+
 	@ExceptionHandler(MaxUploadSizeExceededException.class)
 	public String handleMaxUploadSizeExceededException(HttpServletRequest request) {
-		return WebUtils.getErrorQueryParamRedirect(request, "error", "File too big. (max 100KB)");
+		return WebUtils.getErrorQueryParamRedirect(request, ERROR_QUERY_KEY, "File too big. (max 100KB)");
 	}
 
 	@ExceptionHandler(SubsBuddyException.class)
 	public String nonSrtFile(HttpServletRequest request, SubsBuddyException e) {
-		return WebUtils.getErrorQueryParamRedirect(request, "error", e.getMessage());
+		return WebUtils.getErrorQueryParamRedirect(request, ERROR_QUERY_KEY, e.getMessage());
 	}
 
 	@ExceptionHandler(Exception.class)
 	public String unknownException(HttpServletRequest request, Exception e) {
-		return WebUtils.getErrorQueryParamRedirect(request, "error", "An unexpected error occurred: " + e.getMessage());
+		return WebUtils.getErrorQueryParamRedirect(request, ERROR_QUERY_KEY, "An unexpected error occurred: " + e.getMessage());
 	}
 }

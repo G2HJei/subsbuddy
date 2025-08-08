@@ -2,6 +2,7 @@ package xyz.zlatanov.subsbuddy.controller;
 
 import static org.springframework.http.HttpHeaders.CONTENT_DISPOSITION;
 import static org.springframework.http.MediaType.APPLICATION_OCTET_STREAM_VALUE;
+import static xyz.zlatanov.subsbuddy.controller.ErrorHandlerController.ERROR_QUERY_KEY;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -31,7 +32,7 @@ public class HomeController {
 
 	@GetMapping
 	public String home(Model model,
-			@RequestParam(value = "error", defaultValue = "#{null}") String error,
+			@RequestParam(value = ERROR_QUERY_KEY, defaultValue = "#{null}") String error,
 			@RequestParam(value = "message", defaultValue = "#{null}") String message) {
 		model.addAttribute("model", service.getModel());
 		model.addAttribute("error", error);
