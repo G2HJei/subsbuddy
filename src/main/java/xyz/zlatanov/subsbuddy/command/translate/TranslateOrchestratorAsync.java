@@ -1,7 +1,6 @@
 package xyz.zlatanov.subsbuddy.command.translate;
 
-import static xyz.zlatanov.subsbuddy.domain.Language.BG;
-import static xyz.zlatanov.subsbuddy.domain.Translation.Status.*;
+import static xyz.zlatanov.subsbuddy.domain.TranslationStatus.*;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.scheduling.annotation.Async;
@@ -12,7 +11,6 @@ import lombok.AllArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.domain.Translation;
 import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQuery;
 import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryHandler;
 import xyz.zlatanov.subsbuddy.query.assemblesubs.AssembleSubsQueryProjection;
@@ -23,7 +21,6 @@ import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextProjection;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQuery;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandler;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
-import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
 @Service
 @Slf4j
@@ -31,14 +28,13 @@ import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 public class TranslateOrchestratorAsync {
 
 	private MovieSubtitleRepository		movieSubtitleRepository;
-	private TranslationRepository		translationRepository;
 	private ParseLinesQueryHandler		parseLinesQueryHandler;
 	private TranslateTextQueryHandler	translateTextQueryHandler;
 	private AssembleSubsQueryHandler	assembleSubsQueryHandler;
 
 	@Async
 	@Transactional
-	protected void orchestrateTranslation(MovieSubtitle sourceSub, Translation translation) {
+	protected void orchestrateTranslation(MovieSubtitle sourceSub, MovieSubtitle translation) {
 		try {
 			translation.status(IN_PROGRESS);
 			doTranslation(sourceSub, translation);
@@ -47,15 +43,15 @@ public class TranslateOrchestratorAsync {
 			log.error(ExceptionUtils.getStackTrace(e));
 			translation.status(FAILED);
 		} finally {
-			translationRepository.save(translation);
+			movieSubtitleRepository.save(translation);
 		}
 	}
 
-	private void doTranslation(MovieSubtitle sourceSub, Translation translation) {
+	private void doTranslation(MovieSubtitle sourceSub, MovieSubtitle translation) {
 		val sourceSubsEntries = extractSourceSubsEntries(sourceSub);
 		val translatedSubsEntries = translate(sourceSubsEntries);
 		val subsContentFormatted = assembleFormattedSubtitles(translatedSubsEntries);
-		saveTranslatedSubtitles(sourceSub, translation, subsContentFormatted);
+		updateTranslatedContent(translation, subsContentFormatted);
 	}
 
 	private ParseLinesProjection extractSourceSubsEntries(MovieSubtitle sourceSub) {
@@ -75,12 +71,9 @@ public class TranslateOrchestratorAsync {
 		return assembleSubsQueryHandler.execute(assembleSubsQuery);
 	}
 
-	private void saveTranslatedSubtitles(MovieSubtitle sourceSub, Translation translation,
-			AssembleSubsQueryProjection subsContentFormatted) {
-		val translatedSub = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename(sourceSub.filename())
-				.language(BG)
-				.subtitleData(subsContentFormatted.content()));
-		translation.translatedSubtitleId(translatedSub.id());
+	private void updateTranslatedContent(MovieSubtitle translation, AssembleSubsQueryProjection subsContentFormatted) {
+		val content = subsContentFormatted.content();
+		translation.subtitleData(content)
+				.hashCode(content.hashCode());
 	}
 }

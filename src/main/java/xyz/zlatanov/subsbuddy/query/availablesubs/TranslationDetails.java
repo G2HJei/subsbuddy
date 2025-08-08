@@ -7,7 +7,7 @@ import java.util.UUID;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import xyz.zlatanov.subsbuddy.domain.Language;
-import xyz.zlatanov.subsbuddy.domain.Translation;
+import xyz.zlatanov.subsbuddy.domain.TranslationStatus;
 
 @Data
 @Accessors(fluent = true)
@@ -15,5 +15,5 @@ public class TranslationDetails {
 
 	private UUID				id;
 	private Language			language	= BG;
-	private Translation.Status	status;
+	private TranslationStatus	status;
 }

@@ -16,10 +16,13 @@ public class MovieSubtitle {
 
 	@Id
 	@GeneratedValue(strategy = UUID)
-	private UUID		id;
-	private String		filename;
+	private UUID				id;
+	private String				filename;
 	@Enumerated(STRING)
-	private Language	language;
+	private Language			language;
 	@Column(columnDefinition = "TEXT")
-	private String		subtitleData;
+	private UUID				translatedFromSubtitleId;
+	private TranslationStatus	status;
+	private String				subtitleData;
+	private int					hashCode;
 }

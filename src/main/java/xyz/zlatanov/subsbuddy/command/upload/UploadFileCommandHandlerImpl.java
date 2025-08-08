@@ -10,7 +10,6 @@ import lombok.val;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommand;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.exception.AlreadyUploadedException;
 import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploadedException;
 import xyz.zlatanov.subsbuddy.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
@@ -30,6 +29,7 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 		val sub = movieSubtitleRepository.save(new MovieSubtitle()
 				.filename(file.filename())
 				.language(EN)
+				.hashCode(file.content().hashCode())
 				.subtitleData(file.content()));
 		translateFileCommandHandler.execute(new TranslateFileCommand().id(sub.id()));
 	}
@@ -37,9 +37,6 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 	private void validateCommand(UploadFileCommand file) {
 		if (!file.filename().endsWith(".srt")) {
 			throw new NotSupportedFileTypeException();
-		}
-		if (movieSubtitleRepository.findOneByFilename(file.filename()) != null) {
-			throw new AlreadyUploadedException();
 		}
 		if (!ReadUtils.hasEnglishCharacters(file.content(), 0.2)) {
 			throw new NonEnglishSubtitleUploadedException();
