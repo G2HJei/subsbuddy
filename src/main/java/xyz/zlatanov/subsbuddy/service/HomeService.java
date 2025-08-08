@@ -36,7 +36,8 @@ public class HomeService {
 
 	public HomeModel getModel() {
 		val quota = translationConnector.usagePercent();
-		val subsList = availableSubsQueryHandler.execute(new AvailableSubsQuery())
+		val availableSubs = availableSubsQueryHandler.execute(new AvailableSubsQuery());
+		val subsList = availableSubs
 				.result().stream()
 				.map(d -> new SubtitleModel()
 						.id(d.id().toString())

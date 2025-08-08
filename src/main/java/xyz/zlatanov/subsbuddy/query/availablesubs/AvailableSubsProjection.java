@@ -1,17 +1,16 @@
 package xyz.zlatanov.subsbuddy.query.availablesubs;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.experimental.Accessors;
 
 @AllArgsConstructor
-@Getter
+@Data
 @Accessors(fluent = true)
 public class AvailableSubsProjection {
 
-	private List<SubDetails> result = new ArrayList<>();
+	private List<SubDetails> result;
 
 }

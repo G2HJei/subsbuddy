@@ -3,6 +3,7 @@ package xyz.zlatanov.subsbuddy.domain;
 import static jakarta.persistence.EnumType.STRING;
 import static jakarta.persistence.GenerationType.UUID;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -20,9 +21,11 @@ public class MovieSubtitle {
 	private String				filename;
 	@Enumerated(STRING)
 	private Language			language;
-	@Column(columnDefinition = "TEXT")
 	private UUID				translatedFromSubtitleId;
+	@Enumerated(STRING)
 	private TranslationStatus	status;
+	@Column(columnDefinition = "TEXT")
 	private String				subtitleData;
 	private int					hashCode;
+	private LocalDateTime		createdAt	= LocalDateTime.now();
 }

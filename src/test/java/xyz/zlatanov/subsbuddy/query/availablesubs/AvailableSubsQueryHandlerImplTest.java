@@ -1,7 +1,6 @@
 package xyz.zlatanov.subsbuddy.query.availablesubs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 import static xyz.zlatanov.subsbuddy.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.domain.Language.EN;
@@ -32,20 +31,31 @@ class AvailableSubsQueryHandlerImplTest {
 
 	@Test
 	void shouldFindSubs() {
-		when(movieSubtitleRepo.findAll())
-				.thenReturn(List.of(new MovieSubtitle().id(subtitleId).language(EN).filename("name")));
-		when(movieSubtitleRepo.findByTranslatedFromSubtitleId(subtitleId)).thenReturn(List.of(
-				new MovieSubtitle()
-						.translatedFromSubtitleId(translationId)
-						.language(BG)));
+		when(movieSubtitleRepo.findByLanguageOrderByCreatedAtDesc(EN))
+				.thenReturn(List.of(
+						new MovieSubtitle()
+								.id(subtitleId)
+								.language(EN)
+								.filename("name")));
+		when(movieSubtitleRepo.findByTranslatedFromSubtitleId(subtitleId))
+				.thenReturn(List.of(
+						new MovieSubtitle()
+								.id(translationId)
+								.translatedFromSubtitleId(subtitleId)
+								.language(BG)));
 
 		val projection = handler.execute(new AvailableSubsQuery());
 
-		assertEquals(1, projection.result().size());
-		val translations = projection.result().getFirst().translations();
-		assertEquals(1, translations.size());
-		assertTrue(translations.stream().anyMatch(t -> t.language().equals(BG)));
-		assertTrue(translations.stream().anyMatch(t -> translationId.equals(t.id())));
+		assertEquals(
+				new AvailableSubsProjection(List.of(new SubDetails()
+						.id(subtitleId)
+						.filename("name")
+						.language(EN)
+						.translations(List.of(new TranslationDetails()
+								.id(translationId)
+								.language(BG))))),
+				projection);
+
 	}
 
 }

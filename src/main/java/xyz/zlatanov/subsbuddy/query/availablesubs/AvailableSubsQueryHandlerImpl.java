@@ -1,5 +1,7 @@
 package xyz.zlatanov.subsbuddy.query.availablesubs;
 
+import static xyz.zlatanov.subsbuddy.domain.Language.EN;
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -14,7 +16,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 
 	@Override
 	public AvailableSubsProjection execute(AvailableSubsQuery query) {
-		val subtitles = subtitleRepository.findAll();
+		val subtitles = subtitleRepository.findByLanguageOrderByCreatedAtDesc(EN);
 		return new AvailableSubsProjection(
 				subtitles.stream()
 						.map(m -> new SubDetails()
@@ -23,7 +25,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 								.language(m.language())
 								.translations(subtitleRepository.findByTranslatedFromSubtitleId(m.id()).stream()
 										.map(t -> new TranslationDetails()
-												.id(t.translatedFromSubtitleId())
+												.id(t.id())
 												.language(t.language())
 												.status(t.status()))
 										.toList()))
