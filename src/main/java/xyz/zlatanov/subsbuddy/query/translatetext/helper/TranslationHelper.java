@@ -59,7 +59,6 @@ public class TranslationHelper {
 		val startIndex = Math.max(0, bufferIndex - offset);
 		val endIndex = Math.min(selections.size() - 1, startIndex + 5);
 		return IntStream.range(startIndex, endIndex)
-				.filter(i -> i != bufferIndex)
 				.mapToObj(selections::get)
 				.map(this::getSelectionText)
 				.collect(Collectors.joining(" "));
