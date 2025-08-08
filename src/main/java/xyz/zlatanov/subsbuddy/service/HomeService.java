@@ -3,6 +3,7 @@ package xyz.zlatanov.subsbuddy.service;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -40,7 +41,7 @@ public class HomeService {
 						.language(d.language().name())
 						.translations(d.translations().stream()
 								.map(t -> new TranslationModel()
-										.id(t.id().toString())
+										.id(Optional.ofNullable(t.id()).map(UUID::toString).orElse(null))
 										.language(t.language().name())
 										.status(t.status().name()))
 								.toList()))

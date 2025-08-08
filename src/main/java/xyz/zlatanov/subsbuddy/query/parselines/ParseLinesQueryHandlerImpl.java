@@ -18,7 +18,7 @@ import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 @Service
 public class ParseLinesQueryHandlerImpl implements ParseLinesQueryHandler {
 
-	public static final String			INFO_LINE	= "--Translated by 🐻 Subs Buddy--";
+	public static final String			INFO_LINE	= "-- Translated by 🐻 \"Subs Buddy\" --";
 	public static final SubtitleEntry	INFO_ENTRY	= new SubtitleEntry()
 			.start(LocalTime.of(0, 0, 0))
 			.end(LocalTime.of(0, 0, 10))

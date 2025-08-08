@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
+import xyz.zlatanov.subsbuddy.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.translatetext.helper.EntriesGrouper;
 import xyz.zlatanov.subsbuddy.query.translatetext.helper.TranslationHelper;
 

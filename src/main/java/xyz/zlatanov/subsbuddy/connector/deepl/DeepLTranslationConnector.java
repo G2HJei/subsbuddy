@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.connector.translation.deepl;
+package xyz.zlatanov.subsbuddy.connector.deepl;
 
 import java.util.Optional;
 
@@ -13,7 +13,7 @@ import jakarta.annotation.PostConstruct;
 import lombok.SneakyThrows;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
+import xyz.zlatanov.subsbuddy.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.domain.Language;
 
 @Service
@@ -34,10 +34,11 @@ public class DeepLTranslationConnector implements TranslationConnector {
 	@SneakyThrows
 	public String translate(String text, Language from, Language to, String context) {
 		val options = new TextTranslationOptions().setContext(context);
+		log.debug("Context    : {}", context.replace("\n", " "));
 		log.debug("Translating: {}", text);
 		val translation = client.translateText(text, from.name().toLowerCase(), to.name().toLowerCase(), options);
 		val translatedText = translation.getText();
-		log.debug("          -> {}", translatedText);
+		log.debug("          -> {}\n", translatedText);
 		return translatedText;
 	}
 

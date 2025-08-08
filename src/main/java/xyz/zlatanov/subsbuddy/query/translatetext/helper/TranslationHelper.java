@@ -13,7 +13,7 @@ import org.apache.commons.text.StringEscapeUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import xyz.zlatanov.subsbuddy.connector.translation.TranslationConnector;
+import xyz.zlatanov.subsbuddy.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.query.SubtitleEntry;
 
 @RequiredArgsConstructor(access = PRIVATE)
@@ -58,12 +58,13 @@ public class TranslationHelper {
 		val offset = selections.size() - bufferIndex < 3 ? 4 : 2;
 		val startIndex = Math.max(0, bufferIndex - offset);
 		val endIndex = Math.min(selections.size() - 1, startIndex + 5);
-		return IntStream.range(startIndex, endIndex)
-				.filter(i -> i != bufferIndex)
-				.mapToObj(selections::get)
-				.map(this::getSelectionText)
-				.collect(Collectors.joining("\n"));
-
+		return "-\"" +
+				IntStream.range(startIndex, endIndex)
+						.filter(i -> i != bufferIndex)
+						.mapToObj(selections::get)
+						.map(this::getSelectionText)
+						.collect(Collectors.joining("\"\n- \""))
+				+ "\"";
 	}
 
 }

@@ -1,4 +1,4 @@
-package xyz.zlatanov.subsbuddy.connector.translation;
+package xyz.zlatanov.subsbuddy.connector;
 
 import xyz.zlatanov.subsbuddy.domain.Language;
 
