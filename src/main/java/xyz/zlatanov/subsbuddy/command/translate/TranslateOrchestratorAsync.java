@@ -23,6 +23,7 @@ import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextProjection;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQuery;
 import xyz.zlatanov.subsbuddy.query.translatetext.TranslateTextQueryHandler;
 import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
+import xyz.zlatanov.subsbuddy.repository.TranslationRepository;
 
 @Service
 @Slf4j
@@ -30,6 +31,7 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 public class TranslateOrchestratorAsync {
 
 	private MovieSubtitleRepository		movieSubtitleRepository;
+	private TranslationRepository		translationRepository;
 	private ParseLinesQueryHandler		parseLinesQueryHandler;
 	private TranslateTextQueryHandler	translateTextQueryHandler;
 	private AssembleSubsQueryHandler	assembleSubsQueryHandler;
@@ -38,15 +40,18 @@ public class TranslateOrchestratorAsync {
 	@Transactional
 	protected void orchestrateTranslation(MovieSubtitle sourceSub, Translation translation) {
 		try {
+			translation.status(IN_PROGRESS);
 			doTranslation(sourceSub, translation);
+			translation.status(COMPLETED);
 		} catch (Exception e) {
 			log.error(ExceptionUtils.getStackTrace(e));
 			translation.status(FAILED);
+		} finally {
+			translationRepository.save(translation);
 		}
 	}
 
 	private void doTranslation(MovieSubtitle sourceSub, Translation translation) {
-		translation.status(IN_PROGRESS);
 		val sourceSubsEntries = extractSourceSubsEntries(sourceSub);
 		val translatedSubsEntries = translate(sourceSubsEntries);
 		val subsContentFormatted = assembleFormattedSubtitles(translatedSubsEntries);
@@ -76,6 +81,6 @@ public class TranslateOrchestratorAsync {
 				.filename(sourceSub.filename())
 				.language(BG)
 				.subtitleData(subsContentFormatted.content()));
-		translation.translatedSubtitleId(translatedSub.id()).status(COMPLETED);
+		translation.translatedSubtitleId(translatedSub.id());
 	}
 }
