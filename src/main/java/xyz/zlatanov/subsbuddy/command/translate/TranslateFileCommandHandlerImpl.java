@@ -34,7 +34,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 
 	private void initiateTranslation(MovieSubtitle sourceSub) {
 		val translation = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename("[BG] " + sourceSub.filename())
+				.filename(sourceSub.filename())
 				.language(BG)
 				.translatedFromSubtitleId(sourceSub.id())
 				.status(TranslationStatus.CREATED));
