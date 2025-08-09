@@ -35,7 +35,7 @@ public class HomeService {
 	private TranslationConnector		translationConnector;
 
 	public HomeModel getModel() {
-		val quota = translationConnector.usagePercent();
+		val quota = 100 - translationConnector.usagePercent();
 		val availableSubs = availableSubsQueryHandler.execute(new AvailableSubsQuery());
 		val subsList = availableSubs
 				.result().stream()

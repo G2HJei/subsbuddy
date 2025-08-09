@@ -12,7 +12,7 @@
 <section class="mt-3">
     <div class="container">
         <div class="row">
-            <div class="col-12 col-md-6 mx-auto">
+            <div class="col-12 mx-auto">
                 <div class="d-flex justify-content-between align-items-center mb-3">
                     <h2 class="d-flex justify-content-center gap-1 align-items-center mb-0">
                         <a th:href="@{/}" class="text-decoration-none text-muted">
@@ -31,27 +31,33 @@
         </div>
         <form method="post" enctype="multipart/form-data">
             <div class="row">
-                <div class="col-12 col-md-4 d-flex justify-content-start align-items-center ms-auto">
+                <div class="col-9 d-flex justify-content-start align-items-center ms-auto">
                     <div class="form-group">
                         <input id="srtSelect" type="file" name="srt" accept=".srt" class="form-control-file">
                     </div>
                 </div>
-                <div class="col-12 col-md-2 mt-md-0 d-flex justify-content-end align-items-center me-auto">
+                <div class="col-3 mt-md-0 d-flex justify-content-end align-items-center me-auto">
                     <button id="btnUpload" type="submit" class="btn btn-primary">Upload</button>
                 </div>
             </div>
         </form>
-        <span class="d-flex justify-content-center align-items-center gap-2 fs-6 text-muted fw-lighter fst-italic mt-2"
-              th:text="${'Translation quota: ' + model.quota + '%'}">
-            Translation quota reached: %
-        </span>
+        <div class="row">
+            <div class="col-12 d-flex justify-content-end align-items-center gap-2 mt-2">
+                <label for="quotaProgress" class="text-muted small mb-0">Quota</label>
+                <div id="quotaProgress" class="progress w-100" style="max-width: 78px; height: 0.75rem;"
+                     data-bs-toggle="tooltip" role="progressbar"
+                     th:data-bs-title="${'Translation quota remaining: '+model.quota + '%'}">
+                    <div class="progress-bar" th:style="${'width: '+model.quota+'%'}"></div>
+                </div>
+            </div>
+        </div>
         <div class="row mt-2" th:if="${model.subtitleList.isEmpty()}">
-            <div class="col-12 col-md-6 mx-auto">
+            <div class="col-12 mx-auto">
                 Translated subs will appear here...
             </div>
         </div>
         <div class="row mt-2" th:if="${not model.subtitleList.isEmpty()}">
-            <div class="col-12 col-md-6 mx-auto">
+            <div class="col-12 mx-auto">
                 <table class="table table-hover table-borderless text-break align-middle mt-2 w-100">
                     <tbody>
                     <tr th:each="sub : ${model.subtitleList}" th:class="${sub.filename eq 'e2e.srt'?'e2e-test':''}">
