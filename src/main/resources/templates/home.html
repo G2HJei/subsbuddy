@@ -20,10 +20,6 @@
                             <span>Subs Buddy</span>
                         </a>
                     </h2>
-                    <a th:href="@{/logout}" class="btn btn-outline-secondary btn-sm" data-bs-toggle="tooltip"
-                       data-bs-title="Logout">
-                        <i class="bi bi-box-arrow-right"></i>
-                    </a>
                 </div>
                 <p th:text="${message}" th:if="${message ne null}" class="alert alert-success mb-3"></p>
                 <p th:text="${error}" th:if="${error ne null}" class="alert alert-danger mb-3"></p>
@@ -44,7 +40,7 @@
         <div class="row">
             <div class="col-12 d-flex justify-content-end align-items-center gap-2 mt-2">
                 <label for="quotaProgress" class="text-muted small mb-0">Quota</label>
-                <div id="quotaProgress" class="progress w-100" style="max-width: 78px; height: 0.75rem;"
+                <div id="quotaProgress" class="progress w-100" style="max-width: 77px; height: 0.75rem;"
                      data-bs-toggle="tooltip" role="progressbar"
                      th:data-bs-title="${'Translation quota remaining: '+model.quota + '%'}">
                     <div class="progress-bar" th:style="${'width: '+model.quota+'%'}"></div>
