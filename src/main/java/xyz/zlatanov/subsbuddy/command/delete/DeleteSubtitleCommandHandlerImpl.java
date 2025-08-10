@@ -1,5 +1,7 @@
 package xyz.zlatanov.subsbuddy.command.delete;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -8,14 +10,14 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
 @Service
 @AllArgsConstructor
-public class DeleteFileCommandHandlerImpl implements DeleteFileCommandHandler {
+public class DeleteSubtitleCommandHandlerImpl implements DeleteSubtitleCommandHandler {
 
 	private MovieSubtitleRepository movieSubtitleRepository;
 
 	@Override
 	@Transactional
-	public void execute(DeleteFileCommand command) {
-		movieSubtitleRepository.deleteAllByTranslatedFromSubtitleId(command.id());
-		movieSubtitleRepository.deleteById(command.id());
+	public void execute(UUID subId) {
+		movieSubtitleRepository.deleteAllByTranslatedFromSubtitleId(subId);
+		movieSubtitleRepository.deleteById(subId);
 	}
 }

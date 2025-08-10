@@ -9,8 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
-import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommand;
-import xyz.zlatanov.subsbuddy.command.delete.DeleteFileCommandHandler;
+import xyz.zlatanov.subsbuddy.command.delete.DeleteSubtitleCommandHandler;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommand;
 import xyz.zlatanov.subsbuddy.command.upload.UploadFileCommandHandler;
 import xyz.zlatanov.subsbuddy.connector.TranslationConnector;
@@ -28,11 +27,11 @@ import xyz.zlatanov.subsbuddy.util.ReadUtils;
 @AllArgsConstructor
 public class HomeService {
 
-	private AvailableSubsQueryHandler	availableSubsQueryHandler;
-	private UploadFileCommandHandler	uploadFileCommandHandler;
-	private DownloadFileQueryHandler	downloadFileQueryHandler;
-	private DeleteFileCommandHandler	deleteFileCommandHandler;
-	private TranslationConnector		translationConnector;
+	private AvailableSubsQueryHandler		availableSubsQueryHandler;
+	private UploadFileCommandHandler		uploadFileCommandHandler;
+	private DownloadFileQueryHandler		downloadFileQueryHandler;
+	private DeleteSubtitleCommandHandler	deleteSubtitleCommandHandler;
+	private TranslationConnector			translationConnector;
 
 	public HomeModel getModel() {
 		val quota = 100 - translationConnector.usagePercent();
@@ -73,6 +72,6 @@ public class HomeService {
 
 	public void delete(String id) {
 		val idToDelete = UUID.fromString(id);
-		deleteFileCommandHandler.execute(new DeleteFileCommand().id(idToDelete));
+		deleteSubtitleCommandHandler.execute(idToDelete);
 	}
 }
