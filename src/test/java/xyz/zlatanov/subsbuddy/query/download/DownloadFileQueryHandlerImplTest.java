@@ -31,7 +31,7 @@ class DownloadFileQueryHandlerImplTest {
 				""";
 		when(repository.findById(subtitleId)).thenReturn(Optional.of(
 				new MovieSubtitle()
-						.filename("Aliens (1986) HDRip XviD.PSF-17.srt")
+						.name("Aliens (1986) HDRip XviD.PSF-17.srt")
 						.subtitleData(content)));
 		val projection = handler.execute(subtitleId);
 		assertEquals("Aliens (1986) HDRip XviD.PSF-17.srt", projection.filename());

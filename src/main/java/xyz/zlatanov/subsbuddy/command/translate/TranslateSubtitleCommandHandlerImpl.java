@@ -16,15 +16,15 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 
 @Service
 @AllArgsConstructor
-public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHandler {
+public class TranslateSubtitleCommandHandlerImpl implements TranslateFileCommandHandler {
 
 	private MovieSubtitleRepository		movieSubtitleRepository;
 	private TranslateOrchestratorAsync	asyncOrchestrator; // orchestration logic is in a separate class to allow @Async
 
 	@Override
 	@Transactional
-	public void execute(TranslateFileCommand command) {
-		val sourceSub = getSourceSub(command.id());
+	public void execute(UUID fileId) {
+		val sourceSub = getSourceSub(fileId);
 		initiateTranslation(sourceSub);
 	}
 
@@ -34,7 +34,7 @@ public class TranslateFileCommandHandlerImpl implements TranslateFileCommandHand
 
 	private void initiateTranslation(MovieSubtitle sourceSub) {
 		val translation = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename(sourceSub.filename())
+				.name(sourceSub.name())
 				.language(BG)
 				.translatedFromSubtitleId(sourceSub.id())
 				.status(TranslationStatus.CREATED));

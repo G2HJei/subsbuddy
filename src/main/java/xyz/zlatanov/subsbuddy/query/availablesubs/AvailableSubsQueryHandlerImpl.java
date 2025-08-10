@@ -21,7 +21,7 @@ public class AvailableSubsQueryHandlerImpl implements AvailableSubsQueryHandler 
 				subtitles.stream()
 						.map(m -> new SubDetails()
 								.id(m.id())
-								.filename(m.filename())
+								.filename(m.name())
 								.language(m.language())
 								.translations(subtitleRepository.findByTranslatedFromSubtitleId(m.id()).stream()
 										.map(t -> new TranslationDetails()

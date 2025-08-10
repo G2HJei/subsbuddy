@@ -36,7 +36,7 @@ class AvailableSubsQueryHandlerImplTest {
 						new MovieSubtitle()
 								.id(subtitleId)
 								.language(EN)
-								.filename("name")));
+								.name("name")));
 		when(movieSubtitleRepo.findByTranslatedFromSubtitleId(subtitleId))
 				.thenReturn(List.of(
 						new MovieSubtitle()

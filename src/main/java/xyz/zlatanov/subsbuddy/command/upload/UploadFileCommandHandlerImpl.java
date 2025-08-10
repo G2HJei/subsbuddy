@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
-import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommand;
 import xyz.zlatanov.subsbuddy.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.exception.NonEnglishSubtitleUploadedException;
@@ -27,11 +26,11 @@ public class UploadFileCommandHandlerImpl implements UploadFileCommandHandler {
 	public void execute(UploadFileCommand file) {
 		validateCommand(file);
 		val sub = movieSubtitleRepository.save(new MovieSubtitle()
-				.filename(file.filename())
+				.name(file.filename())
 				.language(EN)
 				.hashCode(file.content().hashCode())
 				.subtitleData(file.content()));
-		translateFileCommandHandler.execute(new TranslateFileCommand().id(sub.id()));
+		translateFileCommandHandler.execute(sub.id());
 	}
 
 	private void validateCommand(UploadFileCommand file) {

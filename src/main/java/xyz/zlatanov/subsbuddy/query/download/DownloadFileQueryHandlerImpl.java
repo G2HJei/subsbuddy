@@ -18,7 +18,7 @@ public class DownloadFileQueryHandlerImpl implements DownloadFileQueryHandler {
 	public DownloadFileProjection execute(UUID id) {
 		return repository.findById(id)
 				.map(f -> new DownloadFileProjection()
-						.filename(f.filename())
+						.filename(f.name())
 						.content(f.subtitleData()))
 				.orElseThrow(SubtitleNotFoundException::new);
 	}

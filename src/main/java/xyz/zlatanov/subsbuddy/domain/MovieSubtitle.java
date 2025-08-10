@@ -18,7 +18,7 @@ public class MovieSubtitle {
 	@Id
 	@GeneratedValue(strategy = UUID)
 	private UUID				id;
-	private String				filename;
+	private String				name;
 	@Enumerated(STRING)
 	private Language			language;
 	private UUID				translatedFromSubtitleId;

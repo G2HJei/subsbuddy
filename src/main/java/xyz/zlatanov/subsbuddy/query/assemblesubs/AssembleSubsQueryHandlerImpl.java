@@ -60,10 +60,14 @@ public class AssembleSubsQueryHandlerImpl implements AssembleSubsQueryHandler {
 				result += token + " ";
 			} else {
 				sizeCounter = token.length() + 1;
-				result = result.substring(0, result.length() - 1); // remove last whitespace
+				result = removeLastWhitespace(result);
 				result += "\n" + token + " ";
 			}
 		}
-		return result.substring(0, result.length() - 1); // remove last whitespace;
+		return removeLastWhitespace(result);
+	}
+
+	private static String removeLastWhitespace(String result) {
+		return result.substring(0, result.length() - 1);
 	}
 }

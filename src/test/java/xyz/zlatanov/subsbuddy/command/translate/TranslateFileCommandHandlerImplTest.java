@@ -3,7 +3,6 @@ package xyz.zlatanov.subsbuddy.command.translate;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static xyz.zlatanov.subsbuddy.domain.Language.EN;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -22,34 +21,22 @@ import xyz.zlatanov.subsbuddy.repository.MovieSubtitleRepository;
 class TranslateFileCommandHandlerImplTest {
 
 	@Mock
-	MovieSubtitleRepository			movieSubtitleRepository;
+	MovieSubtitleRepository				movieSubtitleRepository;
 	@Mock
-	TranslateOrchestratorAsync		translateOrchestratorAsync;
+	TranslateOrchestratorAsync			translateOrchestratorAsync;
 	@InjectMocks
-	TranslateFileCommandHandlerImpl	handler;
-
-	UUID							fileId			= UUID.randomUUID();
-	TranslateFileCommand			command			= new TranslateFileCommand().id(fileId);
-	String							subtitleData	= """
-			1
-			00:01:07,818 --> 00:01:11,572
-			It all began with the forging\s
-			of the Great Rings...
-			""";
-	MovieSubtitle					lotrEn			= new MovieSubtitle()
-			.id(fileId)
-			.filename("test.srt")
-			.language(EN)
-			.subtitleData(subtitleData);
+	TranslateSubtitleCommandHandlerImpl	handler;
 
 	@Test
 	void execute_existingFile_translates() {
-		when(movieSubtitleRepository.findById(fileId)).thenReturn(Optional.of(lotrEn));
+		val subId = UUID.randomUUID();
+		val sub = new MovieSubtitle().id(subId);
+		when(movieSubtitleRepository.findById(subId)).thenReturn(Optional.of(sub));
 		val translation = new MovieSubtitle();
 		when(movieSubtitleRepository.save(any())).thenReturn(translation);
 
-		handler.execute(command);
+		handler.execute(subId);
 
-		verify(translateOrchestratorAsync).orchestrateTranslation(lotrEn, translation);
+		verify(translateOrchestratorAsync).orchestrateTranslation(sub, translation);
 	}
 }
