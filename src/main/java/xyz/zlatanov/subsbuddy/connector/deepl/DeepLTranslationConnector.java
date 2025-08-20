@@ -1,13 +1,16 @@
 package xyz.zlatanov.subsbuddy.connector.deepl;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import com.deepl.api.DeepLClient;
-import com.deepl.api.DeepLException;
-import com.deepl.api.TextTranslationOptions;
+import com.deepl.api.*;
 
 import jakarta.annotation.PostConstruct;
+import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
@@ -19,45 +22,79 @@ import xyz.zlatanov.subsbuddy.exception.SubsBuddyException;
 @Slf4j
 public class DeepLTranslationConnector implements TranslationConnector {
 
-	@Value("${DEEPL_API_KEY}")
-	private String		apiKey;
+	@Value("#{'${DEEPL_API_KEY:}'.split(',')}")
+	private List<String>		apiKeys;
 
-	private DeepLClient	client;
+	private List<DeepLClient>	clients;
 
 	@PostConstruct
 	public void init() {
-		client = new DeepLClient(apiKey);
+		clients = apiKeys.stream()
+				.map(DeepLClient::new)
+				.toList();
 		usagePercent();
 	}
 
 	@Override
 	@SneakyThrows
 	public long usagePercent() {
-		val charUsage = client.getUsage().getCharacter();
-		assert charUsage != null;
-		val percentUsed = (charUsage.getCount() * 100) / charUsage.getLimit();
-		val usageLog = charUsage.getCount() + "/" + charUsage.getLimit();
-		log.info("DeepL usage: {}% ({} characters used)", percentUsed, usageLog);
+		val chars = clients.stream()
+				.map(this::getChars)
+				.toList();
+		val percentUsed = chars.stream()
+				.filter(Objects::nonNull)
+				.map(this::calcPercent)
+				.reduce(0L, Long::sum) / chars.size();
+		chars.stream()
+				.filter(Objects::nonNull)
+				.forEach(ch -> log.info("DeepL usage: {}% ({} characters used)",
+						calcPercent(ch), ch.getCount() + "/" + ch.getLimit()));
 		return percentUsed;
+	}
+
+	private long calcPercent(Usage.Detail ch) {
+		return (ch.getCount() * 100) / ch.getLimit();
+	}
+
+	@SneakyThrows
+	private Usage.Detail getChars(DeepLClient deepLClient) {
+		val usage = deepLClient.getUsage();
+		assert usage != null;
+		return usage.getCharacter();
 	}
 
 	@Override
 	public String translate(String text, Language from, Language to, String context) {
 		log.debug("Context    : {}", context.replace("\n", " "));
 		log.debug("Translating: {}", text);
+		val availableClients = new ArrayList<>(clients);
 		val options = new TextTranslationOptions().setContext(context);
-		val translatedText = attemptTranslation(text, from, to, options, 0);
+		val translationItem = new TranslationItem(availableClients, text, from, to, options, 0);
+		val translatedText = runTranslation(translationItem);
 		log.debug("          -> {}\n", translatedText);
 		return translatedText;
 	}
 
 	@SneakyThrows
-	private String attemptTranslation(String text, Language from, Language to, TextTranslationOptions options, long retryCount) {
-		delayRetry(retryCount);
+	private String runTranslation(TranslationItem item) {
+		delayRetry(item.retryCount);
 		try {
-			return client.translateText(text, from.name(), to.name(), options).getText();
+			return item.runClients.getFirst()
+					.translateText(item.text, item.from.name(), item.to.name(), item.options).getText();
+		} catch (QuotaExceededException e) {
+			verifyRemaining(item.runClients);
+			return runTranslation(item);
 		} catch (DeepLException e) {
-			return attemptTranslation(text, from, to, options, retryCount + 1);
+			item.retryCount++;
+			return runTranslation(item);
+		}
+	}
+
+	private void verifyRemaining(List<DeepLClient> clients) {
+		if (clients.size() > 1) {
+			clients.removeFirst();
+		} else {
+			throw new SubsBuddyException("Ran out of translation quota.");
 		}
 	}
 
@@ -68,5 +105,16 @@ public class DeepLTranslationConnector implements TranslationConnector {
 		} else {
 			Thread.sleep(retryCount * 2_000);
 		}
+	}
+
+	@AllArgsConstructor
+	private static final class TranslationItem {
+
+		private List<DeepLClient>		runClients;
+		private String					text;
+		private Language				from;
+		private Language				to;
+		private TextTranslationOptions	options;
+		private int						retryCount;
 	}
 }
