@@ -1,5 +1,5 @@
 FROM eclipse-temurin:21-alpine
 LABEL org.opencontainers.image.authors="zlatanov.xyz"
-COPY target/subs-buddy.jar subs-buddy.jar
+COPY subs-buddy-web/target/subs-buddy-web.jar subs-buddy-web.jar
 EXPOSE 8080
-ENTRYPOINT ["java","-jar","/subs-buddy.jar"]
+ENTRYPOINT ["java","-jar","/subs-buddy-web.jar"]
