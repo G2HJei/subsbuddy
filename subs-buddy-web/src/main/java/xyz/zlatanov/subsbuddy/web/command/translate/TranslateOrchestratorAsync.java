@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import lombok.extern.slf4j.Slf4j;
-import xyz.zlatanov.subsbuddy.core.SubsBuddyClient;
+import xyz.zlatanov.subsbuddy.core.client.SubsBuddyClient;
 import xyz.zlatanov.subsbuddy.web.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;
 

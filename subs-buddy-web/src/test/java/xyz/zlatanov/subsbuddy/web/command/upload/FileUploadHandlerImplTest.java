@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import lombok.val;
 import xyz.zlatanov.subsbuddy.web.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.web.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.web.exception.NotSupportedFileTypeException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;
 
 @ExtendWith(MockitoExtension.class)

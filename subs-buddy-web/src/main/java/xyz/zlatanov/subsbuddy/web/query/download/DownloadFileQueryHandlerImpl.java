@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import lombok.AllArgsConstructor;
-import xyz.zlatanov.subsbuddy.web.exception.SubtitleNotFoundException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.SubtitleNotFoundException;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;
 
 @Service

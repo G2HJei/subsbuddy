@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 
 import lombok.val;
 import xyz.zlatanov.subsbuddy.web.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.web.exception.SubtitleNotFoundException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.SubtitleNotFoundException;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;
 
 class DownloadFileQueryHandlerImplTest {

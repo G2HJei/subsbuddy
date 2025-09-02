@@ -10,8 +10,8 @@ import lombok.val;
 import xyz.zlatanov.subsbuddy.core.util.ReadUtils;
 import xyz.zlatanov.subsbuddy.web.command.translate.TranslateFileCommandHandler;
 import xyz.zlatanov.subsbuddy.web.domain.MovieSubtitle;
-import xyz.zlatanov.subsbuddy.web.exception.NonEnglishSubtitleUploadedException;
-import xyz.zlatanov.subsbuddy.web.exception.NotSupportedFileTypeException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.NonEnglishSubtitleUploadedException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;
 
 @Service

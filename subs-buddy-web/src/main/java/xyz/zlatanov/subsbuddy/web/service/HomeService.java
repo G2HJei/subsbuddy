@@ -9,12 +9,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
-import xyz.zlatanov.subsbuddy.core.SubsBuddyClient;
+import xyz.zlatanov.subsbuddy.core.client.SubsBuddyClient;
 import xyz.zlatanov.subsbuddy.core.util.ReadUtils;
 import xyz.zlatanov.subsbuddy.web.command.delete.DeleteSubtitleCommandHandler;
 import xyz.zlatanov.subsbuddy.web.command.upload.UploadFileCommand;
 import xyz.zlatanov.subsbuddy.web.command.upload.UploadFileCommandHandler;
-import xyz.zlatanov.subsbuddy.web.exception.NotSupportedFileTypeException;
+import xyz.zlatanov.subsbuddy.web.domain.exception.NotSupportedFileTypeException;
 import xyz.zlatanov.subsbuddy.web.model.DownloadModel;
 import xyz.zlatanov.subsbuddy.web.model.HomeModel;
 import xyz.zlatanov.subsbuddy.web.model.SubtitleModel;

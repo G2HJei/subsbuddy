@@ -12,7 +12,7 @@ import lombok.val;
 import lombok.extern.slf4j.Slf4j;
 import xyz.zlatanov.subsbuddy.core.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.core.domain.Language;
-import xyz.zlatanov.subsbuddy.core.exception.SubsBuddyException;
+import xyz.zlatanov.subsbuddy.core.domain.exception.SubsBuddyException;
 
 @Slf4j
 public class DeepLTranslationConnector implements TranslationConnector {

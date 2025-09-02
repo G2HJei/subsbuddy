@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.AllArgsConstructor;
 import lombok.val;
-import xyz.zlatanov.subsbuddy.core.exception.TranslationException;
+import xyz.zlatanov.subsbuddy.core.domain.exception.TranslationException;
 import xyz.zlatanov.subsbuddy.web.domain.MovieSubtitle;
 import xyz.zlatanov.subsbuddy.web.domain.TranslationStatus;
 import xyz.zlatanov.subsbuddy.web.repository.MovieSubtitleRepository;

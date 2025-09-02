@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 import jakarta.servlet.http.HttpServletRequest;
-import xyz.zlatanov.subsbuddy.core.exception.SubsBuddyException;
+import xyz.zlatanov.subsbuddy.core.domain.exception.SubsBuddyException;
 import xyz.zlatanov.subsbuddy.web.util.WebUtils;
 
 @ControllerAdvice
