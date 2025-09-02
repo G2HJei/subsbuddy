@@ -15,11 +15,18 @@ public class SrtSubsAssembler implements SubsAssembler {
 	public String assemble(List<SubtitleEntry> entries) {
 		val sb = new StringBuilder();
 		var counter = 1;
-		for (SubtitleEntry entry : entries) {
-			sb.append(counter++).append("\n");
-			sb.append(formatTime(entry.start())).append(" --> ")
-					.append(formatTime(entry.end())).append("\n");
-			sb.append(improveReadability(entry.text())).append("\n\n");
+		for (val entry : entries) {
+			val startTime = formatTime(entry.start());
+			val endTime = formatTime(entry.end());
+			sb.append(String.format("""
+					%s
+					%s --> %s
+					%s
+
+					""",
+					counter++,
+					startTime, endTime,
+					improveReadability(entry.text())));
 		}
 		return sb.toString();
 	}
@@ -30,18 +37,17 @@ public class SrtSubsAssembler implements SubsAssembler {
 	}
 
 	private String improveReadability(String t) {
-		val readabilityThreshold1 = 40;
-		val readabilityThreshold2 = 45;
-		if (t.length() < readabilityThreshold2) {
+		val readabilityThresholdChars = 40;
+		val readabilityThresholdCharsExtended = 45;
+		if (t.length() < readabilityThresholdCharsExtended) {
 			return t;
 		}
-		if (t.length() * 2 < readabilityThreshold1 * 2) {
-			return splitText(t, readabilityThreshold1);
-		}
-		if (t.length() * 2 < readabilityThreshold2 * 2) {
-			return splitText(t, readabilityThreshold2);
-		}
-		return splitText(t, readabilityThreshold1);
+		val threshold = t.length() > readabilityThresholdCharsExtended * 2
+				? readabilityThresholdChars
+				: readabilityThresholdCharsExtended;
+
+		return splitText(t, threshold);
+
 	}
 
 	private String splitText(String text, int lineSize) {
