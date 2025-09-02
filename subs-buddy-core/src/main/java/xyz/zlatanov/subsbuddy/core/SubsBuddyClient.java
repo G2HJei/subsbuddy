@@ -1,19 +1,19 @@
 package xyz.zlatanov.subsbuddy.core;
 
 import java.util.Arrays;
+import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 import lombok.val;
 import xyz.zlatanov.subsbuddy.core.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.core.connector.deepl.DeepLTranslationConnector;
+import xyz.zlatanov.subsbuddy.core.query.SubtitleEntry;
 import xyz.zlatanov.subsbuddy.core.query.assemblesubs.AssembleSubsQuery;
 import xyz.zlatanov.subsbuddy.core.query.assemblesubs.AssembleSubsQueryHandler;
 import xyz.zlatanov.subsbuddy.core.query.assemblesubs.AssembleSubsQueryHandlerImpl;
 import xyz.zlatanov.subsbuddy.core.query.assemblesubs.AssembleSubsQueryProjection;
-import xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesProjection;
-import xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesQuery;
-import xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesQueryHandler;
-import xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesQueryHandlerImpl;
+import xyz.zlatanov.subsbuddy.core.query.parselines.EntryParser;
+import xyz.zlatanov.subsbuddy.core.query.parselines.SrtEntryParser;
 import xyz.zlatanov.subsbuddy.core.query.translatetext.TranslateTextProjection;
 import xyz.zlatanov.subsbuddy.core.query.translatetext.TranslateTextQuery;
 import xyz.zlatanov.subsbuddy.core.query.translatetext.TranslateTextQueryHandler;
@@ -23,7 +23,7 @@ import xyz.zlatanov.subsbuddy.core.query.translatetext.TranslateTextQueryHandler
 public class SubsBuddyClient {
 
 	private final AssembleSubsQueryHandler	assembleSubsHandler;
-	private final ParseLinesQueryHandler	parseLinesHandler;
+	private final EntryParser				parseLinesHandler;
 	private final TranslationConnector		translationConnector;
 	private final TranslateTextQueryHandler	translateTextHandler;
 
@@ -32,7 +32,7 @@ public class SubsBuddyClient {
 		val translationConnector = new DeepLTranslationConnector(deepLApiKeysList);
 		return new SubsBuddyClient(
 				new AssembleSubsQueryHandlerImpl(),
-				new ParseLinesQueryHandlerImpl(),
+				new SrtEntryParser(),
 				translationConnector,
 				new TranslateTextQueryHandlerImpl(translationConnector));
 	}
@@ -48,15 +48,12 @@ public class SubsBuddyClient {
 		return subsContentFormatted.content();
 	}
 
-	private ParseLinesProjection extractSourceSubsEntries(String srtSource) {
-		val parseLinesQuery = new ParseLinesQuery()
-				.addSubsBuddyInfo(true)
-				.subtitleData(srtSource);
-		return parseLinesHandler.execute(parseLinesQuery);
+	private List<SubtitleEntry> extractSourceSubsEntries(String srtSource) {
+		return parseLinesHandler.parse(srtSource);
 	}
 
-	private TranslateTextProjection translate(ParseLinesProjection sourceSubsEntries) {
-		val translateQuery = new TranslateTextQuery().linesList(sourceSubsEntries.lineList());
+	private TranslateTextProjection translate(List<SubtitleEntry> subtitleEntries) {
+		val translateQuery = new TranslateTextQuery().linesList(subtitleEntries);
 		return translateTextHandler.execute(translateQuery);
 	}
 

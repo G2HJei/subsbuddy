@@ -1,8 +1,8 @@
 package xyz.zlatanov.subsbuddy.core.query.parselines;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesQueryHandlerImpl.INFO_ENTRY;
-import static xyz.zlatanov.subsbuddy.core.query.parselines.ParseLinesQueryHandlerImpl.INFO_LINE;
+import static xyz.zlatanov.subsbuddy.core.query.parselines.SrtEntryParser.INFO_ENTRY;
+import static xyz.zlatanov.subsbuddy.core.query.parselines.SrtEntryParser.INFO_LINE;
 
 import java.time.LocalTime;
 import java.util.List;
@@ -16,9 +16,9 @@ import org.junit.jupiter.params.provider.MethodSource;
 import lombok.val;
 import xyz.zlatanov.subsbuddy.core.query.SubtitleEntry;
 
-class ParseLinesQueryHandlerImplTest {
+class SrtEntryParserTest {
 
-	ParseLinesQueryHandler		handler					= new ParseLinesQueryHandlerImpl();
+	EntryParser					parser					= new SrtEntryParser();
 
 	static final SubtitleEntry	THE_WORLD_IS_CHANGED	= new SubtitleEntry()
 			.start(LocalTime.of(0, 0, 32, 200000000))
@@ -28,8 +28,8 @@ class ParseLinesQueryHandlerImplTest {
 	@ParameterizedTest
 	@MethodSource("splitLinesArgs")
 	void shouldSplitLines(String subtitleData, List<SubtitleEntry> expectedLines) {
-		val split = handler.execute(new ParseLinesQuery().subtitleData(subtitleData));
-		assertEquals(expectedLines, split.lineList());
+		val lineList = parser.parse(subtitleData, false);
+		assertEquals(expectedLines, lineList);
 	}
 
 	static Stream<Arguments> splitLinesArgs() {
@@ -176,26 +176,25 @@ class ParseLinesQueryHandlerImplTest {
 
 	@Test
 	void shouldAddInfoLine() {
-		val split = handler.execute(new ParseLinesQuery()
-				.addSubsBuddyInfo(true)
-				.subtitleData("""
-						1
-						00:00:32,200 --> 00:00:35,100
-						*Music* The world is changed.
-						"""));
-		assertEquals(List.of(INFO_ENTRY, THE_WORLD_IS_CHANGED), split.lineList());
+		val lineList = parser.parse("""
+				1
+				00:00:32,200 --> 00:00:35,100
+				*Music* The world is changed.
+				""",
+				true);
+		assertEquals(List.of(INFO_ENTRY, THE_WORLD_IS_CHANGED), lineList);
 	}
 
 	@Test
 	void shouldMergeFirstLineWithInfoLineIfStartIsTooSoon() {
-		val split = handler.execute(new ParseLinesQuery()
-				.addSubsBuddyInfo(true)
-				.subtitleData("""
-						1
-						00:00:04,000 --> 00:00:05,000
-						*Music* The world is changed.
-						"""));
-		assertEquals(List.of(
+		val lineList = parser.parse("""
+				1
+				00:00:04,000 --> 00:00:05,000
+				*Music* The world is changed.
+				""",
+				true);
+
+		val expectedLineList = List.of(
 				new SubtitleEntry()
 						.start(LocalTime.of(0, 0, 0, 0))
 						.end(LocalTime.of(0, 0, 4, 0))
@@ -203,7 +202,7 @@ class ParseLinesQueryHandlerImplTest {
 				new SubtitleEntry()
 						.start(LocalTime.of(0, 0, 4, 0))
 						.end(LocalTime.of(0, 0, 5, 0))
-						.text(INFO_LINE + "\nThe world is changed.")),
-				split.lineList());
+						.text(INFO_LINE + "\nThe world is changed."));
+		assertEquals(expectedLineList, lineList);
 	}
 }
