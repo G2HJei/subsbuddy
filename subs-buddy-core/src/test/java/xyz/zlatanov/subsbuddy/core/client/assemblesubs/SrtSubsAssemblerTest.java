@@ -15,7 +15,7 @@ class SrtSubsAssemblerTest {
 	SubsAssembler assembler = new SrtSubsAssembler();
 
 	@Test
-	void execute_simpleLines_assembles() {
+	void shouldAssembleSimpleLines() {
 		val entries = List.of(
 				new SubtitleEntry()
 						.start(LocalTime.of(0, 0, 0, 100_000_000))
@@ -48,7 +48,7 @@ class SrtSubsAssemblerTest {
 	}
 
 	@Test
-	void execute_longLine_assemblesWithLineBreak() {
+	void shouldAssembleSubsWithLineBreak() {
 		val entries = List.of(
 				new SubtitleEntry()
 						.start(LocalTime.of(1, 7, 0))

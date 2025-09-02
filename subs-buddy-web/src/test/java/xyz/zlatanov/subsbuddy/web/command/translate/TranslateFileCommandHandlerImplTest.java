@@ -28,7 +28,7 @@ class TranslateFileCommandHandlerImplTest {
 	TranslateSubtitleCommandHandlerImpl	handler;
 
 	@Test
-	void execute_existingFile_translates() {
+	void shouldTranslateExistingFile() {
 		val subId = UUID.randomUUID();
 		val sub = new MovieSubtitle().id(subId);
 		when(movieSubtitleRepository.findById(subId)).thenReturn(Optional.of(sub));

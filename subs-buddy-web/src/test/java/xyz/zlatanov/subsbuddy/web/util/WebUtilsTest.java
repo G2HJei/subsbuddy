@@ -10,7 +10,7 @@ import lombok.val;
 class WebUtilsTest {
 
 	@Test
-	void getErrorQueryParamRedirect_message_encodes() {
+	void shouldEncodeRedirectMessage() {
 		val request = new MockHttpServletRequest();
 		request.setContextPath("/");
 		assertEquals("redirect:/?message=Test%20message%22", WebUtils.getErrorQueryParamRedirect(request, "message", "Test message\""));

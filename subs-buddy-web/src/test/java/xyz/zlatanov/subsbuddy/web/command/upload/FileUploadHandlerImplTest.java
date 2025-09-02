@@ -28,13 +28,13 @@ class FileUploadHandlerImplTest {
 	UploadFileCommandHandlerImpl	handler;
 
 	@Test
-	void execute_validFile_returns() {
+	void shouldUploadValidFile() {
 		when(movieSubtitleRepository.save(any())).thenReturn(new MovieSubtitle());
 		assertDoesNotThrow(() -> handler.execute(new UploadFileCommand().filename("test.srt").content("test")));
 	}
 
 	@Test
-	void execute_nonSrtFile_throws() {
+	void shouldNotAllowInvalidFile() {
 		val uploadFileCommand = new UploadFileCommand().filename("test.zip");
 		assertThrows(NotSupportedFileTypeException.class, () -> handler.execute(uploadFileCommand));
 	}

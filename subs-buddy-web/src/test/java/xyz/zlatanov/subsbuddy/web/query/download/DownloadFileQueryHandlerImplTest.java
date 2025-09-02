@@ -23,7 +23,7 @@ class DownloadFileQueryHandlerImplTest {
 	UUID						subtitleId	= UUID.randomUUID();
 
 	@Test
-	void execute_validSub_returns() {
+	void shouldDownloadValidSubs() {
 		val content = """
 				1
 				00:04:45,000 --> 00:04:48,000
@@ -39,7 +39,7 @@ class DownloadFileQueryHandlerImplTest {
 	}
 
 	@Test
-	void execute_missingSub_throws() {
+	void shouldIndicateNonExistingSubs() {
 		when(repository.findById(subtitleId)).thenReturn(Optional.empty());
 		assertThrows(SubtitleNotFoundException.class, () -> handler.execute(subtitleId));
 	}
