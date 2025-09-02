@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -14,12 +15,12 @@ import xyz.zlatanov.subsbuddy.core.domain.SubtitleEntry;
 
 public class SrtEntryParser implements EntryParser {
 
-	public static final String			INFO_LINE	= "-- Translated by 🐻 \"Subs Buddy\" --";
-	public static final SubtitleEntry	INFO_ENTRY	= new SubtitleEntry()
+	public static final String			INFO_LINE		= "-- Translated by 🐻 \"Subs Buddy\" --";
+	public static final SubtitleEntry	INFO_ENTRY		= new SubtitleEntry()
 			.start(LocalTime.of(0, 0, 0))
 			.end(LocalTime.of(0, 0, 10))
 			.text(INFO_LINE);
-	private final Pattern				timePattern	= Pattern.compile("([\\d:.,]+) --> ([\\d:.,]+)", Pattern.DOTALL);
+	private static final Pattern		TIMING_PATTERN	= Pattern.compile("([\\d:.,]+) --> ([\\d:.,]+)", Pattern.DOTALL);
 
 	@Override
 	public List<SubtitleEntry> parse(String subtitlesData) {
@@ -30,7 +31,7 @@ public class SrtEntryParser implements EntryParser {
 	public List<SubtitleEntry> parse(String subtitlesData, boolean addInfoLine) {
 		var lineList = getSubtitleEntries(subtitlesData)
 				.stream()
-				.filter(l -> l.start() != null && l.end() != null) // remove metadata and a text before the first subtitle entry
+				.filter(this::hasValidTimestamps)
 				.filter(l -> hasEnglishCharacters(l.text(), 0))
 				.map(l -> l.text(trimLine(l.text())))
 				.filter(l -> hasText(l.text()))
@@ -41,57 +42,92 @@ public class SrtEntryParser implements EntryParser {
 		return lineList;
 	}
 
-	private void addInfoLine(final List<SubtitleEntry> lineList) {
-		if (lineList.isEmpty() || lineList.getFirst().start().isAfter(LocalTime.of(0, 0, 10))) {
-			lineList.addFirst(INFO_ENTRY);
-		} else {
-			val first = lineList.getFirst();
-			lineList.addFirst(new SubtitleEntry()
-					.start(LocalTime.of(0, 0, 0))
-					.end(first.start())
-					.text(INFO_LINE));
-			first.text(INFO_LINE + "\n" + first.text());
-		}
-	}
-
 	private List<SubtitleEntry> getSubtitleEntries(String subtitlesData) {
-		val lineList = new ArrayList<SubtitleEntry>();
+		val entries = new ArrayList<SubtitleEntry>();
 		val scanner = new Scanner(subtitlesData);
-		var splitLine = new SubtitleEntry();
+		SubtitleEntry entryBuffer = null;
 		while (scanner.hasNextLine()) {
 			val textLine = scanner.nextLine();
-			if (hasText(textLine)) { // skip empty lines
-				val matcher = timePattern.matcher(textLine);
-				if (matcher.matches()) { // the next subtitle entry is reached
-					lineList.add(splitLine);
-					splitLine = new SubtitleEntry();
-
-					splitLine.start(LocalTime.parse(matcher.group(1).replace(',', '.')));
-					splitLine.end(LocalTime.parse(matcher.group(2).replace(',', '.')));
-
-				} else { // add a text line of the current subtitle entry
-					splitLine.text((splitLine.text() + textLine).trim() + "\n");
-				}
+			if (!hasText(textLine)) {
+				continue;
+			}
+			val matcher = TIMING_PATTERN.matcher(textLine);
+			if (matcher.matches()) {
+				flushBuffer(entryBuffer, entries);
+				entryBuffer = initBuffer(matcher);
+			} else {
+				appendText(entryBuffer, textLine);
 			}
 		}
-		lineList.add(splitLine);
-		return lineList;
+		flushBuffer(entryBuffer, entries);
+		return entries;
 	}
 
-	private static String trimLine(String input) {
+	private boolean hasText(String str) {
+		return str != null && !str.trim().isEmpty();
+	}
+
+	private void flushBuffer(SubtitleEntry currentEntry, ArrayList<SubtitleEntry> entries) {
+		if (currentEntry != null) {
+			entries.add(currentEntry);
+		}
+	}
+
+	private SubtitleEntry initBuffer(Matcher matcher) {
+		return new SubtitleEntry()
+				.start(LocalTime.parse(matcher.group(1).replace(',', '.')))
+				.end(LocalTime.parse(matcher.group(2).replace(',', '.')));
+	}
+
+	private void appendText(SubtitleEntry entry, String textLine) {
+		if (entry != null) {
+			entry.text((entry.text() + textLine).trim() + "\n");
+		}
+	}
+
+	private boolean hasValidTimestamps(SubtitleEntry l) {
+		return l.start() != null && l.end() != null;
+	}
+
+	private String trimLine(String input) {
+		val addSpacesAfterPunctuation = "([.!?])(\\S)";
+		val newLines = "\r?\n";
+		val doubleWhitespaces = "\\s{2,}";
+		val htmlTags = "<[^>]*+>";
+		val ambientInSquaredBraces = "\\[[^]]*+]";
+		val ambientInAsterisks = "\\*[^\\\\*]*+\\*";
+		val trailingDigits = "\\d+$";
 		return input
-				.replaceAll("([.!?])(\\S)", "$1 $2") 	// add spaces after punctuation
-				.replaceAll("\r?\n", " ") 					// new lines
-				.replaceAll("\\s{2,}", " ") 				// double whitespaces
-				.replaceAll("<[^>]*+>", "") 					// <b></b>
-				.replaceAll("\\[[^]]*+]", "") 				// [man enters]
-				.replaceAll("\\*[^\\\\*]*+\\*", "")  				// *man enters*
+				.replaceAll(addSpacesAfterPunctuation, "$1 $2")
+				.replaceAll(newLines, " ")
+				.replaceAll(doubleWhitespaces, " ")
+				.replaceAll(htmlTags, "")
+				.replaceAll(ambientInSquaredBraces, "")
+				.replaceAll(ambientInAsterisks, "")
 				.trim()
-				.replaceAll("\\d+$", "")					// Neo! 123
+				.replaceAll(trailingDigits, "")
 				.trim();
 	}
 
-	private static boolean hasText(String str) {
-		return str != null && !str.trim().isEmpty();
+	private void addInfoLine(final List<SubtitleEntry> subEntries) {
+		if (noEntriesAtTheStart(subEntries)) {
+			subEntries.addFirst(INFO_ENTRY);
+		} else {
+			glueWithFirst(subEntries);
+		}
+	}
+
+	private boolean noEntriesAtTheStart(List<SubtitleEntry> lineList) {
+		return lineList.isEmpty() || lineList.getFirst().start().isAfter(LocalTime.of(0, 0, 10));
+	}
+
+	private void glueWithFirst(List<SubtitleEntry> lineList) {
+		val first = lineList.getFirst();
+		val infoToGlue = new SubtitleEntry()
+				.start(LocalTime.of(0, 0, 0))
+				.end(first.start())
+				.text(INFO_LINE);
+		lineList.addFirst(infoToGlue);
+		first.text(INFO_LINE + "\n" + first.text());
 	}
 }

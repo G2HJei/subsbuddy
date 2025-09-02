@@ -32,3 +32,6 @@ build/
 ### VS Code ###
 .vscode/
 /src/test/nightwatch/tests_output/
+
+### Maven ###
+.flattened-pom.xml
