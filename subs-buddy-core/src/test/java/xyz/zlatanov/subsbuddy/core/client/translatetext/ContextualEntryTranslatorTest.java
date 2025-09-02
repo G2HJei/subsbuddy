@@ -1,16 +1,15 @@
 package xyz.zlatanov.subsbuddy.core.client.translatetext;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static xyz.zlatanov.subsbuddy.core.client.translatetext.support.EntriesGrouper.MERGE_LINES_THRESHOLD;
+import static xyz.zlatanov.subsbuddy.core.TestUtils.entries;
 import static xyz.zlatanov.subsbuddy.core.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.core.domain.Language.EN;
 
-import java.time.LocalTime;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -37,23 +36,23 @@ class ContextualEntryTranslatorTest {
 
 	static Stream<Arguments> subsEntriesArgs() {
 		return Stream.of(
-				Arguments.argumentSet("Single sentence",
+				argumentSet("Single sentence",
 						entries("0 -> 1 -> To be the man you've got to beat the man."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT TO BEAT THE MAN.")),
 
-				Arguments.argumentSet("Two entries",
+				argumentSet("Two entries",
 						entries("0 -> 1 -> To be the man you've got to beat the man.",
 								"3 -> 4 -> If you smell..."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT TO BEAT THE MAN.",
 								"3 -> 4 -> IF YOU SMELL...")),
 
-				Arguments.argumentSet("Two-entry sentence",
+				argumentSet("Two-entry sentence",
 						entries("0 -> 1 -> To be the man you've got to",
 								"1 -> 2 -> beat the man. If you smell..."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT TO",
 								"1 -> 2 -> BEAT THE MAN. IF YOU SMELL...")),
 
-				Arguments.argumentSet("Tri-line sentence",
+				argumentSet("Tri-line sentence",
 						entries("0 -> 1 -> To be the man",
 								"1 -> 2 -> you've got to",
 								"2 -> 3 -> beat the man."),
@@ -61,23 +60,23 @@ class ContextualEntryTranslatorTest {
 								"1 -> 2 -> GOT TO BEAT THE",
 								"2 -> 3 -> MAN.")),
 
-				Arguments.argumentSet("Two-line with special characters ",
+				argumentSet("Two-line with special characters ",
 						entries("0 -> 1 -> To be the man you've got",
 								"1 -> 2 -> to \"beat\" the man. If you smell..."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT",
 								"1 -> 2 -> TO \"BEAT\" THE MAN. IF YOU SMELL...")),
 
-				Arguments.argumentSet("Two-sentence line",
+				argumentSet("Two-sentence line",
 						entries("0 -> 1 -> To be the man you've got to beat the man. If you smell..."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT TO BEAT THE MAN. IF YOU SMELL...")),
 
-				Arguments.argumentSet("Two-line sentence with long pause",
+				argumentSet("Two-line sentence with long pause",
 						entries("0 -> 1 -> To be the man you've got",
 								"5 -> 6 -> to beat the man. If you smell..."),
 						entries("0 -> 1 -> TO BE THE MAN YOU'VE GOT",
 								"5 -> 6 -> TO BEAT THE MAN. IF YOU SMELL...")),
 
-				Arguments.argumentSet("Reduce line count when necessary",
+				argumentSet("Reduce line count when necessary",
 						entries("0 -> 1 -> Which means you are going to waste a whole lot of taxpayer money",
 								"1 -> 2 -> trying to prove there is",
 								"2 -> 3 -> no DNA."),
@@ -85,30 +84,14 @@ class ContextualEntryTranslatorTest {
 								"1 -> 2 -> TO PROVE THERE IS NO DNA.")));
 	}
 
-	static List<SubtitleEntry> entries(String... entries) {
-		return Arrays.stream(entries)
-				.map(entry -> entry.split(" -> ", 3))
-				.map(parts -> new SubtitleEntry()
-						.start(LocalTime.of(0, 0, Integer.parseInt(parts[0].trim())))
-						.end(LocalTime.of(0, 0, Integer.parseInt(parts[1].trim())))
-						.text(parts[2]))
-				.toList();
-	}
-
 	@Test
 	void shouldTranslateTwoLineSentenceAsOne() {
 		val translationConnector = spy(new CapitalizingTranslationConnector());
 		val translator = new ContextualEntryTranslator(translationConnector);
 
-		translator.translate(List.of(
-				new SubtitleEntry()
-						.start(LocalTime.of(0, 0, 0))
-						.end(LocalTime.of(0, 0, 1))
-						.text("To be the man you've"),
-				new SubtitleEntry()
-						.start(LocalTime.of(0, 0, 1).plus(MERGE_LINES_THRESHOLD))
-						.end(LocalTime.of(0, 0, 2))
-						.text("got to beat the man.")));
+		translator.translate(entries(
+				"0 -> 1 -> To be the man you've",
+				"1,100 -> 2 -> got to beat the man."));
 
 		verify(translationConnector).translate(eq("To be the man you've got to beat the man."), eq(EN), eq(BG), any());
 	}

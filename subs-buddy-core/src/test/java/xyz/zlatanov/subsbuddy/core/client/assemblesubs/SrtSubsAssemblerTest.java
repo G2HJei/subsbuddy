@@ -1,14 +1,11 @@
 package xyz.zlatanov.subsbuddy.core.client.assemblesubs;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.time.LocalTime;
-import java.util.List;
+import static xyz.zlatanov.subsbuddy.core.TestUtils.entries;
 
 import org.junit.jupiter.api.Test;
 
 import lombok.val;
-import xyz.zlatanov.subsbuddy.core.domain.SubtitleEntry;
 
 class SrtSubsAssemblerTest {
 
@@ -16,20 +13,10 @@ class SrtSubsAssemblerTest {
 
 	@Test
 	void shouldAssembleSimpleLines() {
-		val entries = List.of(
-				new SubtitleEntry()
-						.start(LocalTime.of(0, 0, 0, 100_000_000))
-						.end(LocalTime.of(0, 0, 0, 900_000_000))
-						.text("You're gonna be alright."),
-				new SubtitleEntry()
-						.start(LocalTime.of(0, 0, 2))
-						.end(LocalTime.of(0, 0, 3))
-						.text("Yes."),
-				new SubtitleEntry()
-						.start(LocalTime.of(0, 0, 5))
-						.end(LocalTime.of(0, 0, 6))
-						.text("I feel dead."));
-		val subtitleData = assembler.assemble(entries);
+		val actual = assembler.assemble(entries(
+				"00,100 -> 0,900 -> You're gonna be alright.",
+				"02 -> 3 -> Yes.",
+				"05 -> 6 -> I feel dead."));
 
 		assertEquals("""
 				1
@@ -44,17 +31,13 @@ class SrtSubsAssemblerTest {
 				00:00:05,000 --> 00:00:06,000
 				I feel dead.
 
-				""", subtitleData);
+				""", actual);
 	}
 
 	@Test
 	void shouldAssembleSubsWithLineBreak() {
-		val entries = List.of(
-				new SubtitleEntry()
-						.start(LocalTime.of(1, 7, 0))
-						.end(LocalTime.of(1, 7, 5))
-						.text("I can't lie to you about your chances, but... you have my sympathies."));
-		val subtitleData = assembler.assemble(entries);
+		val actual = assembler.assemble(
+				entries("01:07:00 -> 01:07:05 -> I can't lie to you about your chances, but... you have my sympathies."));
 
 		assertEquals("""
 				1
@@ -62,7 +45,7 @@ class SrtSubsAssemblerTest {
 				I can't lie to you about your chances,
 				but... you have my sympathies.
 
-				""", subtitleData);
+				""", actual);
 	}
 
 }
