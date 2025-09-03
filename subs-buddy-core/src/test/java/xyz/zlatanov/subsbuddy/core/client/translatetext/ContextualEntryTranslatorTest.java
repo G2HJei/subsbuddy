@@ -22,8 +22,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import lombok.val;
-import xyz.zlatanov.subsbuddy.core.connector.TranslationConnector;
-import xyz.zlatanov.subsbuddy.core.domain.Language;
 import xyz.zlatanov.subsbuddy.core.domain.SubtitleEntry;
 
 @ExtendWith(MockitoExtension.class)
@@ -99,11 +97,4 @@ class ContextualEntryTranslatorTest {
 		verify(connector).translate(eq("To be the man you've got to beat the man."), eq(EN), eq(BG), any());
 	}
 
-	private static class CapitalizingTranslationConnector implements TranslationConnector {
-
-		@Override
-		public String translate(String text, Language from, Language to, String context) {
-			return text.toUpperCase();
-		}
-	}
 }

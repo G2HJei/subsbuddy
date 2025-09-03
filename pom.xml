@@ -29,6 +29,7 @@
         <opennlp-tools.version>2.3.2</opennlp-tools.version>
         <jsr350.version>3.0.2</jsr350.version>
         <flatten-maven-plugin.version>1.7.0</flatten-maven-plugin.version>
+        <spring-shell-starter.version>3.4.1</spring-shell-starter.version>
     </properties>
 
     <dependencies>
