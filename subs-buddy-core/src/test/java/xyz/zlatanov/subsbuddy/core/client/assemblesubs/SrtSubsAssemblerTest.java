@@ -30,7 +30,6 @@ class SrtSubsAssemblerTest {
 				3
 				00:00:05,000 --> 00:00:06,000
 				I feel dead.
-
 				""", actual);
 	}
 
@@ -44,7 +43,6 @@ class SrtSubsAssemblerTest {
 				01:07:00,000 --> 01:07:05,000
 				I can't lie to you about your chances,
 				but... you have my sympathies.
-
 				""", actual);
 	}
 

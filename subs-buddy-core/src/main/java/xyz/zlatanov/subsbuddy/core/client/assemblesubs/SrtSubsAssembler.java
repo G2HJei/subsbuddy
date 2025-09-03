@@ -1,6 +1,7 @@
 package xyz.zlatanov.subsbuddy.core.client.assemblesubs;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -13,22 +14,22 @@ public class SrtSubsAssembler implements SubsAssembler {
 
 	@Override
 	public String assemble(List<SubtitleEntry> entries) {
-		val sb = new StringBuilder();
+		val srtLines = new ArrayList<String>();
 		var counter = 1;
 		for (val entry : entries) {
 			val startTime = formatTime(entry.start());
 			val endTime = formatTime(entry.end());
-			sb.append(String.format("""
+			val text = improveReadability(entry.text());
+			srtLines.add(String.format("""
 					%s
 					%s --> %s
 					%s
-
 					""",
 					counter++,
 					startTime, endTime,
-					improveReadability(entry.text())));
+					text));
 		}
-		return sb.toString();
+		return String.join("\n", srtLines);
 	}
 
 	private static String formatTime(LocalTime time) {
@@ -36,7 +37,7 @@ public class SrtSubsAssembler implements SubsAssembler {
 				time.getHour(), time.getMinute(), time.getSecond(), time.getNano() / 1000000);
 	}
 
-	private String improveReadability(String t) {
+	private static String improveReadability(String t) {
 		val readabilityThresholdChars = 40;
 		val readabilityThresholdCharsExtended = 45;
 		if (t.length() < readabilityThresholdCharsExtended) {
@@ -50,7 +51,7 @@ public class SrtSubsAssembler implements SubsAssembler {
 
 	}
 
-	private String splitText(String text, int lineSize) {
+	private static String splitText(String text, int lineSize) {
 		final Queue<String> tokens = new LinkedList<>(List.of(WhitespaceTokenizer.INSTANCE.tokenize(text)));
 		var result = "";
 		var sizeCounter = 0;
