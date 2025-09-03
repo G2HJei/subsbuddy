@@ -21,7 +21,7 @@ class SrtEntryParserTest {
 
 	EntryParser			parser					= new SrtEntryParser();
 
-	static final String	THE_WORLD_IS_CHANGED	= "32,200 -> 35,100 -> The world is changed.";
+	static final String	THE_WORLD_IS_CHANGED	= "32,200 -> 35,100 The world is changed.";
 
 	@ParameterizedTest
 	@MethodSource("splitLinesArgs")
@@ -49,8 +49,8 @@ class SrtEntryParserTest {
 								""",
 						entries(
 								THE_WORLD_IS_CHANGED,
-								"35,300 -> 38,200 -> I feel it in the water.",
-								"38,900 -> 41,700 -> I feel it in the earth.")),
+								"35,300 -> 38,200 I feel it in the water.",
+								"38,900 -> 41,700 I feel it in the earth.")),
 
 				Arguments.argumentSet(
 						"Remove metadata",
@@ -106,7 +106,7 @@ class SrtEntryParserTest {
 								00:00:32 --> 00:00:35
 								The world is changed.
 								""",
-						entries("32 -> 35 -> The world is changed.")),
+						entries("32 -> 35 The world is changed.")),
 
 				Arguments.argumentSet(
 						"Multiline",
@@ -116,7 +116,7 @@ class SrtEntryParserTest {
 								The world is changed.
 								I feel it in the water.
 								""",
-						entries("32,200 -> 35,100 -> The world is changed. I feel it in the water.")),
+						entries("32,200 -> 35,100 The world is changed. I feel it in the water.")),
 
 				Arguments.argumentSet(
 						"New line",
@@ -127,7 +127,7 @@ class SrtEntryParserTest {
 
 								I feel it in the water.
 								""",
-						entries("32,200 -> 35,100 -> The world is changed. I feel it in the water.")),
+						entries("32,200 -> 35,100 The world is changed. I feel it in the water.")),
 
 				Arguments.argumentSet(
 						"HTML tags",
@@ -178,8 +178,8 @@ class SrtEntryParserTest {
 				true);
 
 		val expectedEntries = entries(
-				"0 -> 4 -> -- Translated by \uD83D\uDC3B \"Subs Buddy\" --",
-				"4 -> 5 -> " + INFO_LINE + "\nThe world is changed.");
+				"0 -> 4 " + INFO_LINE,
+				"4 -> 5 " + INFO_LINE + "\nThe world is changed.");
 		assertEquals(expectedEntries, actualEntries);
 	}
 }

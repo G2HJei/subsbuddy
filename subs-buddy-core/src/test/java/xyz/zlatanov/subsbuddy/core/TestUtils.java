@@ -18,11 +18,12 @@ public class TestUtils {
 	}
 
 	public static SubtitleEntry entry(String entry) {
-		val parts = entry.split(" -> ", 3);
+		val chunks = entry.split(" -> ");
+		val parts = chunks[1].trim().split(" ", 2);
 		return new SubtitleEntry()
-				.start(time(parts[0].trim()))
-				.end(time(parts[1].trim()))
-				.text(parts[2]);
+				.start(time(chunks[0]))
+				.end(time(parts[0]))
+				.text(parts[1]);
 	}
 
 	private static LocalTime time(String str) {

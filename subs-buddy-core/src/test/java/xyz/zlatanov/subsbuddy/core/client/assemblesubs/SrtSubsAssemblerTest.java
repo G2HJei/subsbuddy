@@ -14,9 +14,9 @@ class SrtSubsAssemblerTest {
 	@Test
 	void shouldAssembleSimpleLines() {
 		val actual = assembler.assemble(entries(
-				"00,100 -> 0,900 -> You're gonna be alright.",
-				"02 -> 3 -> Yes.",
-				"05 -> 6 -> I feel dead."));
+				"0,100 -> 0,900 You're gonna be alright.",
+				"2 -> 3 Yes.",
+				"5 -> 6 I feel dead."));
 
 		assertEquals("""
 				1
@@ -37,7 +37,7 @@ class SrtSubsAssemblerTest {
 	@Test
 	void shouldAssembleSubsWithLineBreak() {
 		val actual = assembler.assemble(
-				entries("01:07:00 -> 01:07:05 -> I can't lie to you about your chances, but... you have my sympathies."));
+				entries("01:07:00 -> 01:07:05 I can't lie to you about your chances, but... you have my sympathies."));
 
 		assertEquals("""
 				1
