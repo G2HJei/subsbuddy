@@ -9,12 +9,10 @@ import com.deepl.api.*;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.val;
-import lombok.extern.slf4j.Slf4j;
 import xyz.zlatanov.subsbuddy.core.connector.TranslationConnector;
 import xyz.zlatanov.subsbuddy.core.domain.Language;
 import xyz.zlatanov.subsbuddy.core.domain.exception.SubsBuddyException;
 
-@Slf4j
 public class DeepLTranslationConnector implements TranslationConnector {
 
 	private final List<DeepLClient> clients;
@@ -32,15 +30,10 @@ public class DeepLTranslationConnector implements TranslationConnector {
 		val chars = clients.stream()
 				.map(this::getChars)
 				.toList();
-		val percentUsed = chars.stream()
+		return chars.stream()
 				.filter(Objects::nonNull)
 				.map(this::calcPercent)
 				.reduce(0L, Long::sum) / chars.size();
-		chars.stream()
-				.filter(Objects::nonNull)
-				.forEach(ch -> log.info("DeepL usage: {}% ({} characters used)",
-						calcPercent(ch), ch.getCount() + "/" + ch.getLimit()));
-		return percentUsed;
 	}
 
 	private long calcPercent(Usage.Detail ch) {
@@ -56,13 +49,10 @@ public class DeepLTranslationConnector implements TranslationConnector {
 
 	@Override
 	public String translate(String text, Language from, Language to, String context) {
-		log.debug("Context    : {}", context.replace("\n", " "));
-		log.debug("Translating: {}", text);
 		val availableClients = new ArrayList<>(clients);
 		val options = new TextTranslationOptions().setContext(context);
 		val translationItem = new TranslationItem(availableClients, text, from, to, options, 0);
 		val translatedText = runTranslation(translationItem);
-		log.debug("          -> {}\n", translatedText);
 		return translatedText;
 	}
 
