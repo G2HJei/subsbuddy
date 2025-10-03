@@ -14,7 +14,6 @@ public class TestSetupConfig {
 	@Bean
 	@Primary
 	public TranslationConnector capitalizingTranslationConnector() {
-		log.info("FOO!");
 		return new CapitalizingTranslationConnector();
 	}
 }

@@ -21,14 +21,16 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import lombok.SneakyThrows;
 import lombok.val;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @SpringBootTest
 @AutoConfigureShell
 @AutoConfigureShellTestClient
 @DirtiesContext(classMode = AFTER_EACH_TEST_METHOD)
 class CliAppTest {
 
-	static final String	TEST_DIR		= System.getProperty("java.io.tmpdir") + "/subs-buddy-" + Instant.now().toEpochMilli();
+	static final String	TEST_DIR		= System.getProperty("java.io.tmpdir") + "subs-buddy-" + Instant.now().toEpochMilli();
 	static final String	IN_DIR_MULTI	= TEST_DIR + "-multiple";
 	static final String	OUT_DIR_MULTI	= TEST_DIR + "-multiple/output";
 	final String		given			= TEST_DIR + "/given.srt";
@@ -55,6 +57,7 @@ class CliAppTest {
 	@SneakyThrows
 	static void setup() {
 		Files.createDirectories(Paths.get(TEST_DIR));
+		log.info("Created test directory: {}", TEST_DIR);
 	}
 
 	@Test

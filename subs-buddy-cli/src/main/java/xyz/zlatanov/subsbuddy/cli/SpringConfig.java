@@ -19,13 +19,11 @@ public class SpringConfig {
 	@Bean
 	@ConditionalOnProperty("DEEPL_API_KEY")
 	public TranslationConnector translationConnector(@Value("${DEEPL_API_KEY}") String... apiKeys) {
-		log.info("derp 1");
 		return new DeepLTranslationConnector(Arrays.asList(apiKeys));
 	}
 
 	@Bean
 	public SubsBuddyClient subsBuddyClient(TranslationConnector translationConnector) {
-		log.info("derp 2");
 		return new SubsBuddyClient(translationConnector);
 	}
 }
