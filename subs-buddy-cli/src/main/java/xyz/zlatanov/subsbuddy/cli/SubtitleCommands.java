@@ -39,6 +39,7 @@ public class SubtitleCommands {
 
 	@SneakyThrows
 	private void translateFile(Path inputPath, Path outputPath) {
+		log.info("Translating {}...", inputPath.getFileName().toString());
 		val inputContent = Files.readString(inputPath);
 		val translatedContent = client.translateSrt(inputContent);
 		Files.writeString(outputPath, translatedContent);
@@ -46,7 +47,9 @@ public class SubtitleCommands {
 
 	@SneakyThrows
 	private void translateDirectory(Path inputDir, Path outputDir) {
+		log.info("Translating directory {}", inputDir.toString());
 		val srtFiles = listSrtFile(inputDir);
+		log.info("{} files found.", srtFiles.size());
 		Files.createDirectories(outputDir);
 		for (val srtFile : srtFiles) {
 			val fileName = srtFile.getFileName().toString();
