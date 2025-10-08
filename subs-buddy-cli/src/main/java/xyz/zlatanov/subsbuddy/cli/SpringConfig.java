@@ -24,6 +24,6 @@ public class SpringConfig {
 
 	@Bean
 	public SubsBuddyClient subsBuddyClient(TranslationConnector translationConnector) {
-		return new SubsBuddyClient(translationConnector);
+		return new SubsBuddyClient(translationConnector, new ConsoleTranslationProgressLogger());
 	}
 }

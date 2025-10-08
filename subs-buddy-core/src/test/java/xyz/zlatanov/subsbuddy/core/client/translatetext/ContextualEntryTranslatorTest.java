@@ -5,6 +5,7 @@ import static org.junit.jupiter.params.provider.Arguments.argumentSet;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import static xyz.zlatanov.subsbuddy.core.TestUtils.entries;
 import static xyz.zlatanov.subsbuddy.core.domain.Language.BG;
 import static xyz.zlatanov.subsbuddy.core.domain.Language.EN;
@@ -18,10 +19,12 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import lombok.val;
+import xyz.zlatanov.subsbuddy.core.client.translatetext.log.TranslationProgressLogger;
 import xyz.zlatanov.subsbuddy.core.domain.SubtitleEntry;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +32,8 @@ class ContextualEntryTranslatorTest {
 
 	@Spy
 	CapitalizingTranslationConnector	connector;
+	@Mock
+	TranslationProgressLogger			translationProgressLogger;
 	@InjectMocks
 	ContextualEntryTranslator			translator;
 
@@ -37,6 +42,27 @@ class ContextualEntryTranslatorTest {
 	void shouldTranslate(List<SubtitleEntry> givenEntries, List<SubtitleEntry> expectedEntries) {
 		val actualEntries = translator.translate(givenEntries);
 		assertEquals(expectedEntries, actualEntries);
+	}
+
+	@Test
+	void shouldLogTranslation() {
+		when(translationProgressLogger.progressPercentStep()).thenReturn(25);
+		translator.translate(entries(
+				"1 -> 1 10%",
+				"2 -> 2 20%",
+				"3 -> 3 30%",
+				"4 -> 4 40%",
+				"5 -> 5 50%",
+				"6 -> 6 60%",
+				"7 -> 7 70%",
+				"8 -> 8 80%",
+				"8 -> 8 90%",
+				"10 -> 10 100%"));
+		verify(translationProgressLogger).start();
+		verify(translationProgressLogger).progress(25);
+		verify(translationProgressLogger).progress(50);
+		verify(translationProgressLogger).progress(75);
+		verify(translationProgressLogger).end();
 	}
 
 	static Stream<Arguments> subsEntriesArgs() {
