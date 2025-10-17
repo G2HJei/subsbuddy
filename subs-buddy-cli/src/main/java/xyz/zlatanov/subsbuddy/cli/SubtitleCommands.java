@@ -3,6 +3,7 @@ package xyz.zlatanov.subsbuddy.cli;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
@@ -24,14 +25,13 @@ public class SubtitleCommands {
 	@Command(description = "Translate SRT subtitle file or directory.")
 	@SneakyThrows
 	public String translate(
-			@Option(required = true, description = "Input file or directory path.") String input,
-			@Option(required = true, description = "Output file or directory path.") String output) {
+			@Option(required = true, description = "Input file or directory path. Unix path syntax.") String input,
+			@Option(description = "Output file or directory path. Unix path syntax. Defaults to \"<inputDirectory>/output\"") String output) {
 		val inputPath = Path.of(input);
-		val outputPath = Path.of(output);
 		if (Files.isDirectory(inputPath)) {
-			translateDirectory(inputPath, outputPath);
+			translateDirectory(inputPath, outputDir(input, output));
 		} else {
-			translateFile(inputPath, outputPath);
+			translateFile(inputPath, outputFile(input, output));
 		}
 		return "Translation complete.";
 
@@ -74,5 +74,15 @@ public class SubtitleCommands {
 	@Command(description = "Check remaining translation API quota")
 	public String quota() {
 		return client.usagePercent() + "%";
+	}
+
+	private static Path outputFile(String input, String output) {
+		return Path.of(Optional.ofNullable(output)
+				.orElse(input.substring(0, input.length() - 4) + "-translated.srt"));
+	}
+
+	private static Path outputDir(String input, String output) {
+		return Path.of(Optional.ofNullable(output)
+				.orElse(input + "/output"));
 	}
 }
